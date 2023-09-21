@@ -1,20 +1,50 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GluestackUIProvider } from '@gluestack-ui/themed';
+import { RootSiblingParent } from 'react-native-root-siblings';
+import {
+	useFonts,
+	Sora_400Regular,
+	Sora_500Medium,
+	Sora_700Bold,
+	Sora_300Light,
+} from '@expo-google-fonts/sora';
+import { config } from './gluestack-ui.config';
+import UserType from './src/screens/UserType';
+import Navigator from './Navigator';
+import 'react-native-reanimated';
+import 'react-native-gesture-handler';
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+	let [fontsLoaded, fontError] = useFonts({
+		Sora_500Medium,
+		Sora_700Bold,
+		Sora_300Light,
+		Sora_400Regular,
+	});
+
+	if (!fontsLoaded && !fontError) {
+		return null;
+	}
+
+	return (
+		<RootSiblingParent>
+			<GluestackUIProvider config={config}>
+				<SafeAreaProvider style={[styles.container]}>
+					<Navigator />
+					<StatusBar style='auto' />
+				</SafeAreaProvider>
+			</GluestackUIProvider>
+		</RootSiblingParent>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+	container: {
+		flex: 1,
+		// padding: 20,
+		fontFamily: 'Sora_300Light',
+		// backgroundColor: '#fffee6',
+	},
 });
