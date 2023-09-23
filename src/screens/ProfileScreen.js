@@ -8,10 +8,11 @@ import {
 	VStack,
 	Divider,
 	Button,
+	AvatarImage,
 } from '@gluestack-ui/themed';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Link } from 'expo-router';
+
 import CusText from '../components/CusText';
 import {
 	Octicons,
@@ -21,9 +22,10 @@ import {
 	Feather,
 	AntDesign,
 } from '@expo/vector-icons';
-
+import { useData } from '../../DataContext';
 const ProfileScreen = ({ navigation }) => {
 	const insets = useSafeAreaInsets();
+	const { curUser } = useData();
 
 	const items = [
 		{
@@ -85,22 +87,22 @@ const ProfileScreen = ({ navigation }) => {
 					alignItems='center'
 				>
 					<Avatar size='2xl'>
-						{/* <AvatarFallbackText>John Doe</AvatarFallbackText> */}
-						<Image
-							source={require('../../assets/gifs/avatar.gif')}
+						<AvatarImage
+							source={{ uri: curUser.unOwnerImg }}
 							resizeMode='contain'
+							size='500px'
 						/>
 					</Avatar>
 
 					<CusText
 						type={'HEADING'}
-						text={'Khyla Ehza Hondrade'}
+						text={`${curUser.fName}${curUser.mName} ${curUser.lName}`}
 						style={{ fontSize: 24 }}
 					/>
 
 					<CusText
 						type={'PRIMARY'}
-						text={'Owner_93272'}
+						text={`Owner_${curUser.uid}`}
 						style={{ marginTop: -8 }}
 					/>
 				</VStack>
@@ -151,7 +153,9 @@ const ProfileScreen = ({ navigation }) => {
 								<Button
 									variant='link'
 									onPress={() => {
-										navigation.navigate(item.action);
+										navigation.navigate(item.action, {
+											params: 'name',
+										});
 									}}
 								>
 									<Ionicons

@@ -22,7 +22,7 @@ import CusMediaPicker from '../components/CusMediaPicker';
 import { useForm } from 'react-hook-form';
 import { useState, useRef } from 'react';
 
-const MaintenanceScreen = () => {
+const MaintenanceScreen = ({ curUser }) => {
 	const insets = useSafeAreaInsets();
 
 	const services = [
@@ -50,7 +50,6 @@ const MaintenanceScreen = () => {
 		{ name: 'Completed', icon: require('../../assets/imgs/done.png') },
 	];
 
-	const location = ['Unit 1013', 'Exterior', 'Unit 5422'];
 	const [loc, setLocation] = useState('');
 	const [type, setType] = useState('');
 	const [showModal, setShowModal] = useState(false);
@@ -78,7 +77,8 @@ const MaintenanceScreen = () => {
 			<>
 				<VStack gap={10}>
 					<CusSelect
-						label={'Location'}
+						placeholder={'Location'}
+						name={`location`}
 						icon={
 							<MaterialIcons
 								name='location-pin'
@@ -86,10 +86,8 @@ const MaintenanceScreen = () => {
 								color='#0A2542'
 							/>
 						}
-						item={location}
-						value={loc}
-						setValue={setLocation}
-						placeholder={'Select location'}
+						control={control}
+						item={[...curUser.units, 'Exterior']}
 					/>
 					<CusTextArea
 						placeholder={'State the problem here...'}
@@ -102,7 +100,9 @@ const MaintenanceScreen = () => {
 						}
 					/>
 					<CusInput
-						label={'Type'}
+						placeholder={type}
+						name={`request`}
+						control={control}
 						icon={
 							<Ionicons
 								name='md-pricetag'
@@ -110,7 +110,6 @@ const MaintenanceScreen = () => {
 								color='#0A2542'
 							/>
 						}
-						type={type}
 						readOnly={true}
 					/>
 					<CusMediaPicker
@@ -159,13 +158,7 @@ const MaintenanceScreen = () => {
 				>
 					{services.map((serv, key) => (
 						<CusModal
-							serv={serv}
 							key={key}
-							location={location}
-							value={loc}
-							setValue={setLocation}
-							type={type}
-							setType={setType}
 							header={'CREATE A REQUEST'}
 							handleSubmit={handleSubmit}
 							onAdd={onAdd}

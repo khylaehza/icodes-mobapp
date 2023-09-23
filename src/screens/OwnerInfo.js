@@ -6,20 +6,28 @@ import {
 	Box,
 	HStack,
 	Button,
+	AvatarImage,
 } from '@gluestack-ui/themed';
 import { View, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CusText from '../components/CusText';
-const OwnerInfo = ({ navigation }) => {
+import DateChecker from '../utilities/DateChecker';
+const OwnerInfo = ({ curUser }) => {
 	const insets = useSafeAreaInsets();
 
+	const date = curUser.createdDate ? curUser.createdDate.seconds * 1000 : '';
+
 	const info = [
-		{ name: 'Last Name', data: 'Hondrade' },
-		{ name: 'Middle Name', data: 'Hondrade' },
-		{ name: 'Given Name', data: 'Hondrade' },
-		{ name: 'Unit Owner No.', data: 'Hondrade' },
-		{ name: 'Surname', data: 'Hondrade' },
-		{ name: 'Surname', data: 'Hondrade' },
+		{ name: 'Last Name', data: curUser.lName },
+		{ name: 'Middle Name', data: curUser.mName },
+		{ name: 'Given Name', data: curUser.fName },
+		{ name: 'Unit Owner No.', data: curUser.uid },
+		{
+			name: 'Unit Owner Since',
+			data: <DateChecker dateToCheck={new Date(date)} />,
+		},
+		{ name: 'Email', data: curUser.email },
+		{ name: 'Contact Number', data: curUser.cNum },
 	];
 	return (
 		<View
@@ -43,22 +51,22 @@ const OwnerInfo = ({ navigation }) => {
 					alignItems='center'
 				>
 					<Avatar size='2xl'>
-						{/* <AvatarFallbackText>John Doe</AvatarFallbackText> */}
-						<Image
-							source={require('../../assets/gifs/avatar.gif')}
+						<AvatarImage
+							source={{ uri: curUser.unOwnerImg }}
 							resizeMode='contain'
+							size='500px'
 						/>
 					</Avatar>
 
 					<CusText
 						type={'HEADING'}
-						text={'Khyla Ehza Hondrade'}
+						text={`${curUser.fName}${curUser.mName} ${curUser.lName}`}
 						style={{ fontSize: 24 }}
 					/>
 
 					<CusText
 						type={'PRIMARY'}
-						text={'Owner_93272'}
+						text={`Owner_${curUser.uid}`}
 						style={{ marginTop: -8 }}
 					/>
 				</VStack>

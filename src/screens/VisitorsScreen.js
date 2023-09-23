@@ -109,7 +109,6 @@ const VisitorsScreen = () => {
 								key={index}
 							>
 								<CusInput
-									w={250}
 									placeholder={"Visitor's name"}
 									name={`visitor_${index}`}
 									control={control}

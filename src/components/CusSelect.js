@@ -17,88 +17,107 @@ import {
 	Box,
 } from '@gluestack-ui/themed';
 import { Entypo } from '@expo/vector-icons';
+import { Controller } from 'react-hook-form';
 
 const CusSelect = ({
-	label,
+	control,
+	name,
+	rules = {},
 	placeholder,
 	icon,
 	item,
-	value,
-	setValue,
+	// value,
+	// setValue,
 	variant = 'underlined',
 	textAlign = 'left',
 	w = 250,
-	bgColor = '$white300',
+	// bgColor = '$white100',
 }) => {
 	return (
-		<FormControl isRequired>
-			<HStack
-				justifyContent='space-between'
-				alignItems='center'
-			>
-				{icon}
-
-				<Select
-					w={w}
-					selectedValue={value}
-					onValueChange={(value, index) => setValue(value)}
-				>
-					<SelectTrigger
-						variant={variant}
-						bgColor={bgColor}
-						softShadow={2}
-						shadowColor='$blue300'
-					>
-						<SelectInput
-							placeholder={placeholder}
-							style={{
-								fontFamily: 'Sora_300Light',
-								fontSize: 15,
-								color: '#000',
-							}}
-							textAlign={textAlign}
-						/>
-
-						<Entypo
-							name='chevron-small-down'
-							size={15}
-							color='black'
-							style={{ marginRight: 10 }}
-						/>
-					</SelectTrigger>
-					<SelectPortal>
-						<SelectBackdrop />
-						<SelectContent
-							ml={40}
-							mr={40}
-							mt={40}
-							borderBottomLeftRadius={20}
-							borderBottomRightRadius={20}
-							borderTopLeftRadius={20}
-							borderTopRightRadius={20}
+		<Controller
+			control={control}
+			name={name}
+			rules={rules}
+			render={({ field: { value, onChange }, fieldState: { error } }) => (
+				<>
+					<FormControl isRequired>
+						<HStack
+							justifyContent='space-between'
+							alignItems='center'
 						>
-							{item.map((label, key) => (
-								<SelectItem
-									label={label}
-									value={label}
-									key={key}
-								/>
-							))}
-						</SelectContent>
-					</SelectPortal>
-				</Select>
-			</HStack>
+							<FormControlLabel>{icon}</FormControlLabel>
 
-			{/* <FormControlHelper>
-				<FormControlHelperText>
-					You can only select one option
-				</FormControlHelperText>
-			</FormControlHelper>
-			<FormControlError>
-				<FormControlErrorIcon as={AlertCircleIcon} />
-				<FormControlErrorText>Mandatory field</FormControlErrorText>
-			</FormControlError> */}
-		</FormControl>
+							<Select
+								w={w}
+								selectedValue={value}
+								// onValueChange={(value, index) =>
+								// 	setValue(value)
+								// }
+								onValueChange={onChange}
+								ml={10}
+							>
+								<SelectTrigger
+									variant={variant}
+									// bgColor={bgColor}
+									// softShadow={2}
+									// shadowColor='$blue300'
+								>
+									<SelectInput
+										placeholder={placeholder}
+										style={{
+											fontFamily: 'Sora_300Light',
+											fontSize: 15,
+											color: '#000',
+										}}
+										textAlign={textAlign}
+									/>
+
+									<Entypo
+										name='chevron-small-down'
+										size={15}
+										color='black'
+										style={{ marginRight: 10 }}
+									/>
+								</SelectTrigger>
+								<SelectPortal>
+									<SelectBackdrop />
+									<SelectContent
+										ml={40}
+										mr={40}
+										mt={40}
+										borderBottomLeftRadius={20}
+										borderBottomRightRadius={20}
+										borderTopLeftRadius={20}
+										borderTopRightRadius={20}
+									>
+										{item.map((label, key) => (
+											<SelectItem
+												label={label}
+												value={label}
+												key={key}
+											/>
+										))}
+									</SelectContent>
+								</SelectPortal>
+							</Select>
+						</HStack>
+						{error && (
+							<CusText
+								text={error.message || 'Error'}
+								type={'PRIMARY'}
+								style={{
+									textAlign: 'left',
+									marginLeft: 45,
+									marginTop: -2,
+									fontSize: 12,
+									color: '#B91E23',
+								}}
+							/>
+						)}
+					</FormControl>
+				</>
+			)}
+		/>
 	);
 };
 

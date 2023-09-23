@@ -16,7 +16,7 @@ const CusPager = ({ item }) => {
 		>
 			{item.map((element, key) => (
 				<Image
-					source={element}
+					source={{ uri: element }}
 					height={150}
 					rounded={5}
 					w={220}

@@ -18,9 +18,12 @@ import FilesInfo from './src/screens/FilesInfo';
 import LoginScreen from './src/screens/LoginScreen';
 import UserType from './src/screens/UserType';
 import OwnerLogScreen from './src/screens/OwnerLogScreen';
+import DataProvider from './DataContext';
+import { useData } from './DataContext';
 const Stack = createNativeStackNavigator();
 function Home({ navigation }) {
 	const [expanded, setExpanded] = useState(false);
+	const { curUser, unitInfo, anncmnts } = useData();
 
 	const _renderIcon = (routeName, selectedTab) => {
 		let icon = '';
@@ -95,13 +98,22 @@ function Home({ navigation }) {
 			<CurvedBottomBarExpo.Screen
 				name='Announcements'
 				component={() => (
-					<AnnouncementScreen setExpanded={setExpanded} />
+					<AnnouncementScreen
+						setExpanded={setExpanded}
+						anncmnts={anncmnts}
+						curUser={curUser}
+					/>
 				)}
 				position='LEFT'
 			/>
 			<CurvedBottomBarExpo.Screen
 				name='Maintenance'
-				component={MaintenanceScreen}
+				component={() => (
+					<MaintenanceScreen
+						setExpanded={setExpanded}
+						curUser={curUser}
+					/>
+				)}
 			/>
 			<CurvedBottomBarExpo.Screen
 				name='Visitors'
@@ -117,6 +129,7 @@ function Home({ navigation }) {
 					<FilesInfo
 						setExpanded={setExpanded}
 						navigation={navigation}
+						curUser={curUser}
 					/>
 				)}
 			/>
@@ -126,6 +139,7 @@ function Home({ navigation }) {
 					<OwnerInfo
 						setExpanded={setExpanded}
 						navigation={navigation}
+						curUser={curUser}
 					/>
 				)}
 			/>
@@ -136,6 +150,8 @@ function Home({ navigation }) {
 					<UnitInfo
 						setExpanded={setExpanded}
 						navigation={navigation}
+						curUser={curUser}
+						unitInfo={unitInfo}
 					/>
 				)}
 			/>
@@ -161,24 +177,26 @@ function Home({ navigation }) {
 const Navigator = () => {
 	return (
 		<NavigationContainer>
-			<Stack.Navigator screenOptions={{ headerShown: false }}>
-				<Stack.Screen
-					name='Login'
-					component={LoginScreen}
-				/>
-				<Stack.Screen
-					name='Type'
-					component={UserType}
-				/>
-				<Stack.Screen
-					name='OwnerLog'
-					component={OwnerLogScreen}
-				/>
-				<Stack.Screen
-					name='Home'
-					component={Home}
-				/>
-			</Stack.Navigator>
+			<DataProvider>
+				<Stack.Navigator screenOptions={{ headerShown: false }}>
+					<Stack.Screen
+						name='Login'
+						component={LoginScreen}
+					/>
+					<Stack.Screen
+						name='Type'
+						component={UserType}
+					/>
+					<Stack.Screen
+						name='OwnerLog'
+						component={OwnerLogScreen}
+					/>
+					<Stack.Screen
+						name='Home'
+						component={Home}
+					/>
+				</Stack.Navigator>
+			</DataProvider>
 		</NavigationContainer>
 	);
 };

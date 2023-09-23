@@ -6,14 +6,26 @@ import CusText from '../components/CusText';
 import CusInput1 from '../components/CusInput1';
 import { useForm } from 'react-hook-form';
 import { Button } from '@gluestack-ui/themed';
+import { useData } from '../../DataContext';
 const OwnerLogScreen = ({ navigation }) => {
+	const { Login, error } = useData();
+
 	const {
 		control,
 		handleSubmit,
 		formState: { errors },
 		watch,
-		// getValues,
+		reset,
 	} = useForm();
+
+	const onLoginPressed = (data) => {
+		console.log(data);
+		let username = data['uname'];
+		let userpass = data['pass'];
+
+		Login(username, userpass, navigation);
+		reset();
+	};
 
 	return (
 		<View style={styles.container}>
@@ -39,11 +51,18 @@ const OwnerLogScreen = ({ navigation }) => {
 					type={'password'}
 					secureTextEntry
 				/>
+				{error && (
+					<CusText
+						text={'Account does not exist.'}
+						type={'SECONDARY'}
+						style={{ color: 'red', fontSize: 11 }}
+					/>
+				)}
 				<Button
 					bgColor='$blue300'
 					w={'100%'}
 					mt={10}
-					onPress={() => navigation.navigate('Home')}
+					onPress={handleSubmit(onLoginPressed)}
 				>
 					<CusText
 						text={'START'}

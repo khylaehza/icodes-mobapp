@@ -12,7 +12,7 @@ import { View, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CusText from '../components/CusText';
 import CusPager from '../components/CusPager';
-const UnitInfo = ({ navigation }) => {
+const UnitInfo = ({ navigation, curUser, unitInfo }) => {
 	const insets = useSafeAreaInsets();
 
 	const info = [
@@ -105,46 +105,55 @@ const UnitInfo = ({ navigation }) => {
 						/>
 					</Box>
 
-					{info.map((data, key) => (
-						<Box
-							padding={10}
-							rounded={15}
-							bgColor='$white300'
-							gap={2}
-							hardShadow={5}
-							shadowColor='$blue200'
-							w={'100%'}
-							mt={20}
-							key={key}
-						>
-							<CusPager item={data.img} />
-							<Box
-								p={5}
-								alignItems='center'
-							>
-								<CusText
-									type={'TERTIARY'}
-									text={data.data}
-								/>
+					{unitInfo.map((data) => (
+						<>
+							{data.units.map((un) => {
+								if (curUser.units.includes(un)) {
+									return (
+										<Box
+											padding={10}
+											rounded={15}
+											bgColor='$white300'
+											gap={2}
+											hardShadow={5}
+											shadowColor='$blue200'
+											w={'100%'}
+											mt={20}
+										>
+											<CusPager
+												item={Array(data.typeImage)}
+											/>
+											<Box
+												p={5}
+												alignItems='center'
+											>
+												<CusText
+													type={'TERTIARY'}
+													text={curUser.units.toString()}
+												/>
 
-								<CusText
-									type={'SECONDARY'}
-									style={{
-										textAlign: 'justify',
-										fontSize: 12,
-									}}
-									text={`Date Acquired: ${data.acquired}`}
-								/>
-								<CusText
-									type={'SECONDARY'}
-									style={{
-										textAlign: 'justify',
-										fontSize: 12,
-									}}
-									text={`Status: ${data.status}`}
-								/>
-							</Box>
-						</Box>
+												<CusText
+													type={'SECONDARY'}
+													style={{
+														textAlign: 'justify',
+														fontSize: 12,
+													}}
+													text={`Date Acquired: ${data.typeName}`}
+												/>
+												<CusText
+													type={'SECONDARY'}
+													style={{
+														textAlign: 'justify',
+														fontSize: 12,
+													}}
+													text={`Status: ${data.unitSize}`}
+												/>
+											</Box>
+										</Box>
+									);
+								}
+							})}
+						</>
 					))}
 				</ScrollView>
 			</Center>
