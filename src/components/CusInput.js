@@ -13,7 +13,7 @@ const CusInput = ({
 	name,
 	rules = {},
 	placeholder,
-	secureTextEntry,
+	isRequired = true,
 	keyboardType,
 	type,
 	maxLength,
@@ -29,7 +29,7 @@ const CusInput = ({
 			rules={rules}
 			render={({ field: { value, onChange }, fieldState: { error } }) => (
 				<>
-					<FormControl isRequired>
+					<FormControl isRequired={isRequired}>
 						<HStack
 							justifyContent='space-between'
 							alignItems='center'
@@ -39,14 +39,14 @@ const CusInput = ({
 							<Input
 								variant='underlined'
 								size='md'
-								isReadOnly={readOnly}
 								w={w}
 								ml={10}
+								isReadOnly={readOnly}
 							>
 								<InputField
 									fontFamily='Sora_300Light'
 									fontSize={15}
-									color='#000'
+									color={readOnly ? '$gray100' : '#000'}
 									keyboardType={keyboardType}
 									value={value}
 									onChangeText={onChange}

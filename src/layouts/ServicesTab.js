@@ -3,6 +3,7 @@ import { AnimatePresence, MotiView } from 'moti';
 import { useState } from 'react';
 import { FontAwesome5, AntDesign } from '@expo/vector-icons';
 import { Image } from '@gluestack-ui/themed';
+import { interpolate, Extrapolate } from 'react-native-reanimated';
 
 export default function ServicesTab({ navigate, expanded, setExpanded }) {
 	return (
@@ -21,7 +22,7 @@ export default function ServicesTab({ navigate, expanded, setExpanded }) {
 					style={{ position: 'relative', zIndex: 5 }}
 					animate={{
 						scale: expanded ? 1.7 : 1.5,
-						rotate: expanded ? '0.8deg' : '0deg',
+						rotate: expanded ? '225deg' : '0deg',
 					}}
 					transition={{
 						duration: 10,

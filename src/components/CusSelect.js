@@ -18,7 +18,7 @@ import {
 } from '@gluestack-ui/themed';
 import { Entypo } from '@expo/vector-icons';
 import { Controller } from 'react-hook-form';
-
+import CusText from './CusText';
 const CusSelect = ({
 	control,
 	name,
@@ -32,6 +32,7 @@ const CusSelect = ({
 	textAlign = 'left',
 	w = 250,
 	// bgColor = '$white100',
+	disabled = false,
 }) => {
 	return (
 		<Controller
@@ -61,6 +62,7 @@ const CusSelect = ({
 									// bgColor={bgColor}
 									// softShadow={2}
 									// shadowColor='$blue300'
+									disabled={disabled}
 								>
 									<SelectInput
 										placeholder={placeholder}

@@ -18,20 +18,15 @@ import {
 	Box,
 } from '@gluestack-ui/themed';
 import { Controller } from 'react-hook-form';
-
+import CusText from './CusText';
 const CusTextArea = ({
 	control,
 	name,
 	rules = {},
 	placeholder,
-	secureTextEntry,
-	keyboardType,
-	type,
-	maxLength,
-	autoCapitalize,
 	icon,
-	readOnly = false,
-	w = 250,
+	w = 238,
+	disabled = false,
 }) => {
 	return (
 		<Controller
@@ -41,9 +36,6 @@ const CusTextArea = ({
 			render={({ field: { value, onChange }, fieldState: { error } }) => (
 				<>
 					<FormControl isRequired>
-						{/* <FormControlLabel>
-				<FormControlLabelText>Write with me</FormControlLabelText>
-			</FormControlLabel> */}
 						<HStack
 							justifyContent='space-between'
 							alignItems='flex-start'
@@ -52,6 +44,7 @@ const CusTextArea = ({
 							<Textarea
 								w={w}
 								ml={10}
+								isReadOnly={disabled}
 							>
 								<TextareaInput
 									placeholder={placeholder}

@@ -115,6 +115,66 @@ const DataProvider = ({ children }) => {
 		return () => unsubscribe();
 	}, []);
 
+	const [visitors, setVisitors] = useState([{}]);
+	useEffect(() => {
+		const q = query(
+			collection(db, 'maintenance', 'frontdesk', 'tbl_visitor')
+		);
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const visitors = [];
+			querySnapshot.forEach(
+				(doc) => {
+					visitors.push({ ...doc.data(), id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+			setVisitors(visitors);
+		});
+		return () => unsubscribe();
+	}, []);
+
+	const [bookings, setBookings] = useState([{}]);
+	useEffect(() => {
+		const q = query(
+			collection(db, 'maintenance', 'frontdesk', 'tbl_BAmenities')
+		);
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const bookings = [];
+			querySnapshot.forEach(
+				(doc) => {
+					bookings.push({ ...doc.data(), id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+			setBookings(bookings);
+		});
+		return () => unsubscribe();
+	}, []);
+
+	const [amenities, setAmenities] = useState([{}]);
+	useEffect(() => {
+		const q = query(
+			collection(db, 'maintenance', 'admin', 'tbl_amenities')
+		);
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const amenities = [];
+			querySnapshot.forEach(
+				(doc) => {
+					amenities.push({ ...doc.data(), id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+			setAmenities(amenities);
+		});
+		return () => unsubscribe();
+	}, []);
+
 	const value = {
 		Login,
 		unitOwners,
@@ -123,6 +183,9 @@ const DataProvider = ({ children }) => {
 		unitInfo,
 		anncmnts,
 		mrequest,
+		visitors,
+		bookings,
+		amenities,
 	};
 
 	return (

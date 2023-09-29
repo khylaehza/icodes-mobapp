@@ -23,7 +23,8 @@ import { useData } from './DataContext';
 const Stack = createNativeStackNavigator();
 function Home({ navigation }) {
 	const [expanded, setExpanded] = useState(false);
-	const { curUser, unitInfo, anncmnts } = useData();
+	const { curUser, unitInfo, anncmnts, mrequest, visitors, amenities } =
+		useData();
 
 	const _renderIcon = (routeName, selectedTab) => {
 		let icon = '';
@@ -112,16 +113,29 @@ function Home({ navigation }) {
 					<MaintenanceScreen
 						setExpanded={setExpanded}
 						curUser={curUser}
+						mrequest={mrequest}
 					/>
 				)}
 			/>
 			<CurvedBottomBarExpo.Screen
 				name='Visitors'
-				component={VisitorsScreen}
+				component={() => (
+					<VisitorsScreen
+						setExpanded={setExpanded}
+						curUser={curUser}
+						visitors={visitors}
+					/>
+				)}
 			/>
 			<CurvedBottomBarExpo.Screen
 				name='Amenities'
-				component={AmenitiesScreen}
+				component={() => (
+					<AmenitiesScreen
+						setExpanded={setExpanded}
+						curUser={curUser}
+						amenities={amenities}
+					/>
+				)}
 			/>
 			<CurvedBottomBarExpo.Screen
 				name='FilesInfo'

@@ -39,11 +39,11 @@ const CusDatePicker = ({ selectedDate, setSelectedDate, icon, mode }) => {
 					justifyContent='space-between'
 					alignItems='center'
 				>
-					{icon}
+					<FormControlLabel>{icon}</FormControlLabel>
 
 					<Button
 						onPress={showDatePicker}
-						w={250}
+						w={245}
 						variant='outline'
 						borderColor='#a9a9ac'
 					>

@@ -18,21 +18,15 @@ import CusInput from '../components/CusInput';
 import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
+import Toast from 'react-native-root-toast';
+import moment from 'moment';
+import { IdGenerator } from '../utilities/IdGenerator';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
 
-const AmenitiesScreen = () => {
+const AmenitiesScreen = ({ curUser, amenities }) => {
 	const insets = useSafeAreaInsets();
-	const amenities = [
-		{
-			name: 'Swimming Pool',
-			capacity: '20/35',
-			img: require('../../assets/imgs/pool.jpg'),
-		},
-		{
-			name: 'Gym',
-			capacity: '25/40',
-			img: require('../../assets/imgs/wip.png'),
-		},
-	];
+
 	const status = [
 		{
 			name: 'Current Bookings',
@@ -43,7 +37,7 @@ const AmenitiesScreen = () => {
 	const ref = useRef(null);
 	const [selectedDate, setSelectedDate] = useState();
 	const [ame, setAme] = useState('');
-
+	const id = IdGenerator();
 	const {
 		control,
 		handleSubmit,
@@ -51,14 +45,40 @@ const AmenitiesScreen = () => {
 		watch,
 		reset,
 		// getValues,
-	} = useForm();
+	} = useForm({
+		values: {
+			request: ame,
+		},
+	});
 
 	const onAdd = (data, e) => {
-		Toast.show('Successful', {
-			duration: Toast.durations.SHORT,
-		});
-		reset();
-		setShowModal(false);
+		console.log(data, moment(selectedDate).format('MM/DD/YYYY'));
+		try {
+			addDoc(
+				collection(db, 'maintenance', 'frontdesk', 'tbl_BAmenities'),
+				{
+					RequestedBy: curUser.uid,
+					Name: `${curUser.fName} ${curUser.lName}`,
+					BookingID: id,
+					// TNum: value.tower,
+
+					AmenityType: data.request,
+					Date: moment(selectedDate).format('MM/DD/YYYY'),
+					NumPerson: data.number,
+					Status: 'Pending',
+				}
+			);
+			Toast.show('Successful', {
+				duration: Toast.durations.SHORT,
+			});
+			reset();
+			setShowModal(false);
+		} catch (e) {
+			Toast.show('Failed', {
+				duration: Toast.durations.SHORT,
+			});
+			console.log(e);
+		}
 	};
 
 	const Body = () => {
@@ -66,7 +86,9 @@ const AmenitiesScreen = () => {
 			<>
 				<VStack gap={10}>
 					<CusInput
-						label={'Type'}
+						placeholder={ame}
+						name={`request`}
+						control={control}
 						icon={
 							<Ionicons
 								name='md-pricetag'
@@ -74,9 +96,9 @@ const AmenitiesScreen = () => {
 								color='#0A2542'
 							/>
 						}
-						type={ame}
 						readOnly={true}
 					/>
+
 					<CusDatePicker
 						selectedDate={selectedDate}
 						setSelectedDate={setSelectedDate}
@@ -89,8 +111,11 @@ const AmenitiesScreen = () => {
 						}
 						mode={'date'}
 					/>
+
 					<CusInput
-						label={'Type'}
+						placeholder={'Number of Person'}
+						name={`number`}
+						control={control}
 						icon={
 							<Ionicons
 								name='ios-people'
@@ -98,8 +123,7 @@ const AmenitiesScreen = () => {
 								color='#0A2542'
 							/>
 						}
-						type={'Number of Person'}
-						keyboard={'number-pad'}
+						keyboardType={'number-pad'}
 					/>
 				</VStack>
 			</>
@@ -147,7 +171,7 @@ const AmenitiesScreen = () => {
 							alignItems='center'
 							mt={10}
 						>
-							{amenities.map((ame, key) => (
+							{amenities.map((data, key) => (
 								<Box
 									rounded={15}
 									bgColor='$white300'
@@ -158,7 +182,7 @@ const AmenitiesScreen = () => {
 									key={key}
 								>
 									<Image
-										source={ame.img}
+										source={{ uri: data.AmenityImg }}
 										width={200}
 										h={120}
 										borderTopLeftRadius={15}
@@ -188,7 +212,7 @@ const AmenitiesScreen = () => {
 												hardShadow='4'
 												onPress={() => {
 													setShowModal(true);
-													setAme(ame.name);
+													setAme(data.AmenityName);
 												}}
 												ref={ref}
 											>
@@ -212,12 +236,12 @@ const AmenitiesScreen = () => {
 									>
 										<CusText
 											type={'SECONDARY'}
-											text={ame.name}
+											text={data.AmenityName}
 											style={{ fontSize: 14 }}
 										/>
 										<CusText
 											type={'PRIMARY'}
-											text={ame.capacity}
+											text={data.Capacity}
 											style={{ fontSize: 14 }}
 										/>
 									</HStack>

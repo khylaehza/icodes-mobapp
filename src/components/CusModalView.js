@@ -12,18 +12,7 @@ import {
 import React from 'react';
 import CusText from './CusText';
 import { AntDesign } from '@expo/vector-icons';
-
-function CusModal({
-	header,
-	body,
-	setShowModal,
-	showModal,
-	button,
-	onAdd,
-	handleSubmit,
-	reset,
-	clearErrors,
-}) {
+const CusModalView = ({ header, body, setShowModal, showModal, button }) => {
 	return (
 		<>
 			{button}
@@ -32,7 +21,6 @@ function CusModal({
 				isOpen={showModal}
 				onClose={() => {
 					setShowModal(false);
-					reset();
 				}}
 			>
 				<ModalBackdrop />
@@ -53,30 +41,14 @@ function CusModal({
 					<ModalBody>{body}</ModalBody>
 					<ModalFooter>
 						<Button
-							variant='outline'
-							size='sm'
-							action='secondary'
-							mr='$3'
-							onPress={() => {
-								setShowModal(false);
-								reset();
-								clearErrors();
-							}}
-						>
-							<CusText
-								type={'PRIMARY'}
-								text={'Cancel'}
-							/>
-						</Button>
-						<Button
 							size='sm'
 							action='positive'
 							bgColor='$blue300'
-							onPress={handleSubmit(onAdd)}
+							onPress={() => setShowModal(false)}
 						>
 							<CusText
 								type={'SECONDARY'}
-								text={'Submit'}
+								text={'Done'}
 								style={{ color: '#FFF' }}
 							/>
 						</Button>
@@ -85,6 +57,6 @@ function CusModal({
 			</Modal>
 		</>
 	);
-}
+};
 
-export default CusModal;
+export default CusModalView;

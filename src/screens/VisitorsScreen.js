@@ -19,25 +19,22 @@ import CusSelect from '../components/CusSelect';
 import { useState, useRef, useEffect } from 'react';
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useForm } from 'react-hook-form';
+import moment from 'moment';
 import Toast from 'react-native-root-toast';
-
-const VisitorsScreen = () => {
+import { IdGenerator } from '../utilities/IdGenerator';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
+import CusModalView from '../components/CusModalView';
+const VisitorsScreen = ({ curUser, visitors }) => {
 	const insets = useSafeAreaInsets();
 	const status = [
-		{
-			name: 'Upcoming Visitors',
-			icon: require('../../assets/imgs/wip.png'),
-		},
-		{
-			name: 'Past Visitors',
-			icon: require('../../assets/imgs/wip.png'),
-		},
+		{ name: 'Active', icon: require('../../assets/imgs/wip.png') },
+		{ name: 'Pending', icon: require('../../assets/imgs/pending.png') },
+		{ name: 'Completed', icon: require('../../assets/imgs/done.png') },
 	];
-
 	const [showModal, setShowModal] = useState(false);
 	const ref = useRef(null);
-	const location = ['Unit 1013', 'Exterior', 'Unit 5422'];
-	const [loc, setLocation] = useState('');
+	const [showDet, setShowDet] = useState(false);
 	const [selectedDate, setSelectedDate] = useState();
 	const [counter, setCounter] = useState(0);
 
@@ -45,6 +42,7 @@ const VisitorsScreen = () => {
 		setCounter(counter + 1);
 	};
 
+	const id = IdGenerator();
 	const {
 		control,
 		handleSubmit,
@@ -52,15 +50,44 @@ const VisitorsScreen = () => {
 		watch,
 		reset,
 		// getValues,
+		clearErrors,
 	} = useForm();
 
-	const onAdd = (data, e) => {
-		Toast.show('Successful', {
-			duration: Toast.durations.SHORT,
-		});
+	const onAdd = async (data, e) => {
+		let visitors = [];
+		for (let x = 0; x < counter; x++) {
+			visitors.push(data[`visitor_${x}`]);
+		}
+
 		reset();
 		setShowModal(false);
 		setCounter(0);
+		setSelectedDate('');
+
+		try {
+			await addDoc(
+				collection(db, 'maintenance', 'frontdesk', 'tbl_visitor'),
+				{
+					VisitorID: id,
+					Unit: data.location,
+					RequestedBy: curUser.uid,
+					For: `${curUser.fName} ${curUser.lName}`,
+					VisitorName: visitors,
+					Date: moment(selectedDate).format('MM/DD/YYYY'),
+					Purpose: data.purpose,
+					Status: 'Pending',
+				}
+			);
+
+			Toast.show('Successful', {
+				duration: Toast.durations.SHORT,
+			});
+		} catch (e) {
+			Toast.show('Failed', {
+				duration: Toast.durations.SHORT,
+			});
+			console.log(e);
+		}
 	};
 
 	const Body = () => {
@@ -91,7 +118,7 @@ const VisitorsScreen = () => {
 						/>
 						<Button
 							onPress={addPerson}
-							w={250}
+							w={245}
 							variant='outline'
 							borderColor='#a9a9ac'
 						>
@@ -143,7 +170,7 @@ const VisitorsScreen = () => {
 					})}
 
 					<CusSelect
-						label={'Location'}
+						name={`location`}
 						icon={
 							<MaterialIcons
 								name='location-pin'
@@ -151,25 +178,143 @@ const VisitorsScreen = () => {
 								color='#0A2542'
 							/>
 						}
-						item={location}
-						value={loc}
-						setValue={setLocation}
-						placeholder={'Select location'}
+						control={control}
+						item={[...curUser.units]}
+						rules={{ required: 'Location is required.' }}
+						placeholder={'Location'}
 					/>
-					<CusSelect
-						label={'Purpose'}
+					{/* <CusSelect
+						name={`purpose`}
 						icon={
-							<MaterialIcons
-								name='location-pin'
-								size={20}
+							<Ionicons
+								name='md-pricetag'
+								size={18}
 								color='#0A2542'
 							/>
 						}
-						item={location}
-						value={loc}
-						setValue={setLocation}
-						placeholder={'Select purpose'}
+						control={control}
+						item={[...curUser.units, 'Exterior']}
+						rules={{ required: 'Purpose is required.' }}
+					/> */}
+					<CusInput
+						placeholder={'Purpose'}
+						name={`purpose`}
+						control={control}
+						rules={{
+							required: 'Purpose is required.',
+						}}
+						autoCapitalize='words'
+						icon={
+							<Ionicons
+								name='md-pricetag'
+								size={18}
+								color='#0A2542'
+							/>
+						}
 					/>
+				</VStack>
+			</>
+		);
+	};
+
+	const ModalView = ({ data }) => {
+		console.log(data.VisitorName);
+		return (
+			<>
+				<VStack gap={20}>
+					<HStack
+						justifyContent='space-between'
+						alignItems='center'
+					>
+						<AntDesign
+							name='calendar'
+							size={22}
+							color='#0A2542'
+						/>
+						<Box
+							w={245}
+							borderBottomWidth={1}
+							borderBottomColor='$gray100'
+							pb={5}
+						>
+							<CusText
+								text={data.Date}
+								type={'PRIMARY'}
+							/>
+						</Box>
+					</HStack>
+
+					{data.VisitorName.map((name, key) => (
+						<HStack
+							justifyContent='space-between'
+							alignItems='center'
+							key={key}
+						>
+							<Ionicons
+								name='ios-people'
+								size={23}
+								color='#0A2542'
+							/>
+
+							<Box
+								w={245}
+								borderBottomWidth={1}
+								borderBottomColor='$gray100'
+								pb={5}
+							>
+								<CusText
+									text={name}
+									type={'PRIMARY'}
+								/>
+							</Box>
+						</HStack>
+					))}
+
+					<HStack
+						justifyContent='space-between'
+						alignItems='center'
+					>
+						<MaterialIcons
+							name='location-pin'
+							size={20}
+							color='#0A2542'
+						/>
+
+						<Box
+							w={245}
+							borderBottomWidth={1}
+							borderBottomColor='$gray100'
+							pb={5}
+						>
+							<CusText
+								text={data.Unit}
+								type={'PRIMARY'}
+							/>
+						</Box>
+					</HStack>
+
+					<HStack
+						justifyContent='space-between'
+						alignItems='center'
+					>
+						<Ionicons
+							name='md-pricetag'
+							size={18}
+							color='#0A2542'
+						/>
+
+						<Box
+							w={245}
+							borderBottomWidth={1}
+							borderBottomColor='$gray100'
+							pb={5}
+						>
+							<CusText
+								text={data.Purpose}
+								type={'PRIMARY'}
+							/>
+						</Box>
+					</HStack>
 				</VStack>
 			</>
 		);
@@ -199,7 +344,7 @@ const VisitorsScreen = () => {
 				/>
 
 				<CusModal
-					header={'BOOK AN AMENITY'}
+					header={'ADD VISITORS'}
 					setShowModal={setShowModal}
 					showModal={showModal}
 					handleSubmit={handleSubmit}
@@ -253,59 +398,64 @@ const VisitorsScreen = () => {
 								/>
 							</HStack>
 							<Divider my='$0.5' />
+							{visitors.map((data, vkey) => {
+								console.log(data);
+								if (
+									curUser.uid == data.RequestedBy &&
+									stat.name == data.Status
+								) {
+									return (
+										<HStack
+											p={5}
+											justifyContent='space-between'
+											alignItems='center'
+											key={vkey}
+										>
+											<CusText
+												type={'SECONDARY'}
+												text={`Visitors #${data.VisitorID}`}
+												style={{ textAlign: 'left' }}
+											/>
 
-							<HStack
-								p={5}
-								justifyContent='space-between'
-								alignItems='center'
-							>
-								<CusText
-									type={'SECONDARY'}
-									text={'Ticket #2132323'}
-									style={{ textAlign: 'left' }}
-								/>
+											<CusModalView
+												header={`Visitors #${data.VisitorID}`}
+												body={<ModalView data={data} />}
+												showModal={showDet}
+												setShowModal={setShowDet}
+												button={
+													<Button
+														variant='link'
+														size='xs'
+														onPress={() => {
+															setShowDet(true);
+														}}
+													>
+														<CusText
+															type={'PRIMARY'}
+															text={'View Info >'}
+															style={{
+																textAlign:
+																	'left',
 
-								<Pressable
-									variant='link'
-									size='xs'
-								>
-									<CusText
-										type={'PRIMARY'}
-										text={'View Status >'}
-										style={{
-											textAlign: 'left',
-											color: '#0A2542',
-											fontSize: 12,
-										}}
-									/>
-								</Pressable>
-							</HStack>
-							<HStack
-								p={5}
-								justifyContent='space-between'
-								alignItems='center'
-							>
-								<CusText
-									type={'SECONDARY'}
-									text={'Ticket #2132323'}
-									style={{ textAlign: 'left' }}
-								/>
-
-								<Pressable
-									variant='link'
-									size='xs'
-								>
-									<CusText
-										type={'PRIMARY'}
-										text={'View Status >'}
-										style={{
-											textAlign: 'left',
-											color: '#0A2542',
-											fontSize: 12,
-										}}
-									/>
-								</Pressable>
-							</HStack>
+																fontSize: 12,
+															}}
+															color='#0A2542'
+														/>
+													</Button>
+												}
+											/>
+										</HStack>
+									);
+								} else if (curUser.uid == data.RequestedBy) {
+									return (
+										<CusText
+											type={'SECONDARY'}
+											text={'No Available Data.'}
+											style={{ textAlign: 'left' }}
+										/>
+									);
+								}
+							})}
 						</Box>
 					))}
 				</Box>

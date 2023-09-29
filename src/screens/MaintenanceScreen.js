@@ -4,13 +4,11 @@ import {
 	Center,
 	Box,
 	HStack,
-	Pressable,
 	Divider,
 	VStack,
 	Button,
 	Image,
 } from '@gluestack-ui/themed';
-
 import Header from '../layouts/Header';
 import CusText from '../components/CusText';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
@@ -21,9 +19,38 @@ import CusInput from '../components/CusInput';
 import CusMediaPicker from '../components/CusMediaPicker';
 import { useForm } from 'react-hook-form';
 import { useState, useRef } from 'react';
+import Toast from 'react-native-root-toast';
+import { IdGenerator } from '../utilities/IdGenerator';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
+import {
+	getStorage,
+	ref,
+	uploadBytesResumable,
+	getDownloadURL,
+} from 'firebase/storage';
+import CusModalView from '../components/CusModalView';
 
-const MaintenanceScreen = ({ curUser }) => {
+const getBlobFroUri = async (uri) => {
+	const blob = await new Promise((resolve, reject) => {
+		const xhr = new XMLHttpRequest();
+		xhr.onload = function () {
+			resolve(xhr.response);
+		};
+		xhr.onerror = function (e) {
+			reject(new TypeError('Network request failed'));
+		};
+		xhr.responseType = 'blob';
+		xhr.open('GET', uri, true);
+		xhr.send(null);
+	});
+
+	return blob;
+};
+
+const MaintenanceScreen = ({ curUser, mrequest }) => {
 	const insets = useSafeAreaInsets();
+	const storage = getStorage();
 
 	const services = [
 		{
@@ -50,11 +77,23 @@ const MaintenanceScreen = ({ curUser }) => {
 		{ name: 'Completed', icon: require('../../assets/imgs/done.png') },
 	];
 
-	const [loc, setLocation] = useState('');
+	const id = IdGenerator();
 	const [type, setType] = useState('');
 	const [showModal, setShowModal] = useState(false);
-	const ref = useRef(null);
+	const [showDet, setShowDet] = useState(false);
+	const btnRef = useRef(null);
 
+	const [images, setImages] = useState({
+		images: [],
+	});
+	const [videos, setVideos] = useState({
+		videos: [],
+	});
+
+	const img = images['images'];
+	const vid = videos['videos'];
+
+	const media = [...img, ...vid];
 	const {
 		control,
 		handleSubmit,
@@ -62,14 +101,108 @@ const MaintenanceScreen = ({ curUser }) => {
 		watch,
 		reset,
 		// getValues,
-	} = useForm();
+		clearErrors,
+	} = useForm({
+		values: {
+			request: type,
+		},
+	});
 
-	const onAdd = (data, e) => {
-		Toast.show('Successful', {
-			duration: Toast.durations.SHORT,
-		});
+	const onAdd = async (data, e) => {
 		reset();
-		setShowModal(false);
+		clearErrors();
+		setShowModal(!showModal);
+
+		const folderPath = `maintenance/propertymanagement/${curUser.id}`;
+		const storageRef = (imageName, ext) =>
+			ref(storage, `${folderPath}/${id}/${imageName}.${ext}`);
+
+		try {
+			const uploadTasks = [];
+
+			await Promise.all(
+				media.map(async (element, key) => {
+					const mediaBlob = await getBlobFroUri(element);
+
+					if (mediaBlob['_data']['type'] == 'video/mp4') {
+						return uploadTasks.push(
+							uploadBytesResumable(
+								storageRef(key, 'mp4'),
+								mediaBlob
+							)
+						);
+					} else {
+						return uploadTasks.push(
+							uploadBytesResumable(
+								storageRef(key, 'jpg'),
+								mediaBlob
+							)
+						);
+					}
+				})
+			);
+
+			const uploadSnapshots = await Promise.all(
+				uploadTasks.map(
+					(task) =>
+						new Promise((resolve, reject) => {
+							task.on(
+								'state_changed',
+								(snapshot) => {
+									const progress =
+										(snapshot.bytesTransferred /
+											snapshot.totalBytes) *
+										100;
+
+									switch (snapshot.state) {
+										case 'paused':
+											console.log('Upload is paused');
+											break;
+										case 'running':
+											console.log('Upload is running');
+											break;
+									}
+								},
+								(error) => reject(error),
+								() => resolve(task.snapshot)
+							);
+						})
+				)
+			);
+
+			const downloadURLs = await Promise.all(
+				uploadSnapshots.map((snapshot) => getDownloadURL(snapshot.ref))
+			);
+
+			await addDoc(
+				collection(
+					db,
+					'maintenance',
+					'propertymanagement',
+					'tbl_MRequest'
+				),
+				{
+					RequestedBy: curUser.uid,
+					RequestedName: `${curUser.fName} ${curUser.lName}`,
+					MRequestID: id,
+					Unit: data.location,
+					DateRequested: serverTimestamp(),
+					RepairType: data.request,
+					RequestImg: downloadURLs,
+					Details: data.details,
+					Status: 'Pending',
+				}
+			);
+
+			Toast.show('Successful', {
+				duration: Toast.durations.SHORT,
+			});
+		} catch (e) {
+			Toast.show('Failed', {
+				duration: Toast.durations.SHORT,
+			});
+			console.log(e);
+		}
 	};
 
 	const ModalBody = () => {
@@ -88,9 +221,11 @@ const MaintenanceScreen = ({ curUser }) => {
 						}
 						control={control}
 						item={[...curUser.units, 'Exterior']}
+						rules={{ required: 'Location is required.' }}
 					/>
 					<CusTextArea
 						placeholder={'State the problem here...'}
+						control={control}
 						icon={
 							<Ionicons
 								name='menu-outline'
@@ -98,6 +233,8 @@ const MaintenanceScreen = ({ curUser }) => {
 								color='#0A2542'
 							/>
 						}
+						name={`details`}
+						rules={{ required: 'Details is required.' }}
 					/>
 					<CusInput
 						placeholder={type}
@@ -120,6 +257,82 @@ const MaintenanceScreen = ({ curUser }) => {
 								color='#0A2542'
 							/>
 						}
+						control={control}
+						name={'media'}
+						setVideos={setVideos}
+						setImages={setImages}
+						img={img}
+						vid={vid}
+					/>
+				</VStack>
+			</>
+		);
+	};
+
+	const ModalView = ({ data }) => {
+		return (
+			<>
+				<VStack gap={10}>
+					<CusSelect
+						placeholder={data.Unit}
+						name={`location`}
+						icon={
+							<MaterialIcons
+								name='location-pin'
+								size={20}
+								color='#0A2542'
+							/>
+						}
+						control={control}
+						item={[...curUser.units, 'Exterior']}
+						disabled={true}
+					/>
+					<CusTextArea
+						placeholder={data.Details}
+						control={control}
+						icon={
+							<Ionicons
+								name='menu-outline'
+								size={22}
+								color='#0A2542'
+							/>
+						}
+						name={`details`}
+						rules={{ required: 'Details is required.' }}
+						disabled={true}
+					/>
+					<CusInput
+						placeholder={data.RepairType}
+						name={`request`}
+						control={control}
+						icon={
+							<Ionicons
+								name='md-pricetag'
+								size={18}
+								color='#0A2542'
+							/>
+						}
+						readOnly={true}
+					/>
+					<CusMediaPicker
+						icon={
+							<Ionicons
+								name='ios-image'
+								size={20}
+								color='#0A2542'
+							/>
+						}
+						control={control}
+						name={'media'}
+						setVideos={setVideos}
+						setImages={setImages}
+						img={data.RequestImg.filter(
+							(word) => !word.includes('mp4')
+						)}
+						vid={data.RequestImg.filter((word) =>
+							word.includes('mp4')
+						)}
+						text={'Images/Videos'}
 					/>
 				</VStack>
 			</>
@@ -163,6 +376,7 @@ const MaintenanceScreen = ({ curUser }) => {
 							handleSubmit={handleSubmit}
 							onAdd={onAdd}
 							reset={reset}
+							clearErrors={clearErrors}
 							body={<ModalBody />}
 							showModal={showModal}
 							setShowModal={setShowModal}
@@ -179,7 +393,7 @@ const MaintenanceScreen = ({ curUser }) => {
 										setShowModal(true);
 										setType(serv.name);
 									}}
-									ref={ref}
+									ref={btnRef}
 								>
 									<VStack
 										alignItems='center'
@@ -207,7 +421,7 @@ const MaintenanceScreen = ({ curUser }) => {
 
 			<ScrollView showsVerticalScrollIndicator={false}>
 				<Box mb={50}>
-					{status.map((stat, key) => (
+					{status.map((stat, skey) => (
 						<Box
 							padding={20}
 							rounded={15}
@@ -215,7 +429,7 @@ const MaintenanceScreen = ({ curUser }) => {
 							gap={2}
 							hardShadow={4}
 							shadowColor='$blue200'
-							key={key}
+							key={skey}
 							mb={20}
 						>
 							<HStack
@@ -235,61 +449,64 @@ const MaintenanceScreen = ({ curUser }) => {
 							</HStack>
 							<Divider my='$0.5' />
 
-							<HStack
-								pr={5}
-								pl={5}
-								justifyContent='space-between'
-								alignItems='center'
-							>
-								<CusText
-									type={'SECONDARY'}
-									text={'Ticket #2132323'}
-									style={{ textAlign: 'left' }}
-								/>
+							{mrequest.map((data, mkey) => {
+								if (
+									curUser.uid == data.RequestedBy &&
+									stat.name == data.Status
+								) {
+									return (
+										<HStack
+											pr={5}
+											pl={5}
+											justifyContent='space-between'
+											alignItems='center'
+											key={mkey}
+										>
+											<CusText
+												type={'SECONDARY'}
+												text={`Ticket #${data.MRequestID}`}
+												style={{ textAlign: 'left' }}
+											/>
 
-								<Button
-									variant='link'
-									size='xs'
-								>
-									<CusText
-										type={'PRIMARY'}
-										text={'View Info >'}
-										style={{
-											textAlign: 'left',
+											<CusModalView
+												header={`Ticket #${data.MRequestID}`}
+												body={<ModalView data={data} />}
+												showModal={showDet}
+												setShowModal={setShowDet}
+												button={
+													<Button
+														variant='link'
+														size='xs'
+														onPress={() => {
+															setShowDet(true);
+														}}
+													>
+														<CusText
+															type={'PRIMARY'}
+															text={'View Info >'}
+															style={{
+																textAlign:
+																	'left',
 
-											fontSize: 12,
-										}}
-										color='#0A2542'
-									/>
-								</Button>
-							</HStack>
-							<HStack
-								pr={5}
-								pl={5}
-								justifyContent='space-between'
-								alignItems='center'
-							>
-								<CusText
-									type={'SECONDARY'}
-									text={'Ticket #2132323'}
-									style={{ textAlign: 'left' }}
-								/>
-
-								<Button
-									variant='link'
-									size='xs'
-								>
-									<CusText
-										type={'PRIMARY'}
-										text={'View Info >'}
-										style={{
-											textAlign: 'left',
-											fontSize: 12,
-										}}
-										color='#0A2542'
-									/>
-								</Button>
-							</HStack>
+																fontSize: 12,
+															}}
+															color='#0A2542'
+														/>
+													</Button>
+												}
+											/>
+										</HStack>
+									);
+								} else if (curUser.uid == data.RequestedBy) {
+									return (
+										<CusText
+											type={'SECONDARY'}
+											text={'No Available Data.'}
+											style={{ textAlign: 'left' }}
+										/>
+									);
+								}
+							})}
 						</Box>
 					))}
 				</Box>
