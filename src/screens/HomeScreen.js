@@ -9,9 +9,20 @@ import {
 	Center,
 } from '@gluestack-ui/themed';
 import CusText from '../components/CusText';
+import { useData } from '../../DataContext';
 
 const HomeScreen = () => {
 	const insets = useSafeAreaInsets();
+	const {
+		curUser,
+		anncmnts,
+		mrequest,
+		visitors,
+		amenities,
+		bookings,
+		reports,
+	} = useData();
+
 	return (
 		<View
 			style={{
@@ -32,11 +43,11 @@ const HomeScreen = () => {
 							height: '50%',
 						}}
 						resizeMode={'contain'}
-						source={require('../../assets/gifs/home.gif')}
+						source={require('../../assets/gifs/agent.gif')}
 					/>
 				</Center>
 				<CusText
-					text={'Hi, Khyla!'}
+					text={`Hi, ${curUser.fName}!`}
 					type={'HEADING'}
 				/>
 
@@ -50,7 +61,7 @@ const HomeScreen = () => {
 						>
 							<CusText
 								type={'SECONDARY'}
-								text={'As of sep 19, you have...'}
+								text={'As of oct 6, you have...'}
 								style={{ fontSize: 13 }}
 							/>
 						</HStack>

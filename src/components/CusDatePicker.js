@@ -16,7 +16,13 @@ import {
 } from '@gluestack-ui/themed';
 import { Entypo } from '@expo/vector-icons';
 import { useState } from 'react';
-const CusDatePicker = ({ selectedDate, setSelectedDate, icon, mode }) => {
+const CusDatePicker = ({
+	selectedDate,
+	setSelectedDate,
+	icon,
+	mode,
+	placeholder = 'Please select date',
+}) => {
 	const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
 	const showDatePicker = () => {
@@ -53,7 +59,7 @@ const CusDatePicker = ({ selectedDate, setSelectedDate, icon, mode }) => {
 									? `Date: ${moment(selectedDate).format(
 											'MM/DD/YYYY'
 									  )}`
-									: 'Please select date'
+									: placeholder
 							}
 							type={'PRIMARY'}
 						/>

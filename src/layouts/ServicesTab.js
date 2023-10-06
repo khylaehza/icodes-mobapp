@@ -2,8 +2,8 @@ import { Text, View, StyleSheet, Pressable } from 'react-native';
 import { AnimatePresence, MotiView } from 'moti';
 import { useState } from 'react';
 import { FontAwesome5, AntDesign } from '@expo/vector-icons';
-import { Image } from '@gluestack-ui/themed';
-import { interpolate, Extrapolate } from 'react-native-reanimated';
+import { Image, VStack } from '@gluestack-ui/themed';
+import CusText from '../components/CusText';
 
 export default function ServicesTab({ navigate, expanded, setExpanded }) {
 	return (
@@ -95,14 +95,18 @@ function ActionButton({ action, index, navigate, setExpanded, expanded }) {
 					},
 				]}
 			>
-				{/* <Text style={{ fontSize: 18 }}>{action.emoji}</Text> */}
 				<Image
 					style={{
-						width: '60%',
-						height: '50%',
+						width: '50%',
+						height: '40%',
 					}}
 					resizeMode={'center'}
 					source={action.img}
+				/>
+				<CusText
+					text={action.location}
+					type={'PRIMARY'}
+					style={{ color: action.fColor, fontSize: 8.5 }}
 				/>
 			</Pressable>
 		</MotiView>
@@ -120,8 +124,8 @@ const styles = StyleSheet.create({
 	button: {
 		alignItems: 'center',
 		justifyContent: 'center',
-		width: 72,
-		height: 72,
+		width: 77,
+		height: 77,
 		borderRadius: 36,
 		backgroundColor: '#0A2542',
 		position: 'absolute',
@@ -143,6 +147,7 @@ const actions = [
 		emoji: '👨🏻‍🚒',
 		border: '#0A2542',
 		img: require('../../assets/imgs/maintenance.png'),
+		fColor: '#FFF',
 	},
 	{
 		location: 'Visitors',
@@ -150,6 +155,7 @@ const actions = [
 		emoji: '📸',
 		border: '#3f4c6e',
 		img: require('../../assets/imgs/id-card.png'),
+		fColor: '#F5F5F5',
 	},
 
 	{
@@ -158,5 +164,14 @@ const actions = [
 		emoji: '🌊',
 		border: '#7e879e',
 		img: require('../../assets/imgs/booking.png'),
+		fColor: '#0A2542',
+	},
+	{
+		location: 'Transactions',
+		color: '#dee3f0',
+		emoji: '🌊',
+		border: '#bdc2cd',
+		img: require('../../assets/imgs/payment.png'),
+		fColor: '#081d33',
 	},
 ];

@@ -31,8 +31,11 @@ const CusSelect = ({
 	variant = 'underlined',
 	textAlign = 'left',
 	w = 250,
-	// bgColor = '$white100',
+	bgColor = '$white100',
 	disabled = false,
+	required,
+	softShadow = 0,
+	shadowColor = null,
 }) => {
 	return (
 		<Controller
@@ -41,7 +44,7 @@ const CusSelect = ({
 			rules={rules}
 			render={({ field: { value, onChange }, fieldState: { error } }) => (
 				<>
-					<FormControl isRequired>
+					<FormControl isRequired={required}>
 						<HStack
 							justifyContent='space-between'
 							alignItems='center'
@@ -59,9 +62,9 @@ const CusSelect = ({
 							>
 								<SelectTrigger
 									variant={variant}
-									// bgColor={bgColor}
-									// softShadow={2}
-									// shadowColor='$blue300'
+									bgColor={bgColor}
+									softShadow={softShadow}
+									shadowColor={shadowColor}
 									disabled={disabled}
 								>
 									<SelectInput

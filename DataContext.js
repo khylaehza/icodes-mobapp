@@ -9,17 +9,23 @@ export function useData() {
 }
 
 const DataProvider = ({ children }) => {
+	const [employees, setEmployees] = useState([{}]);
 	const [unitOwners, setUnitOwners] = useState();
 	const [error, setError] = useState(false);
 	const [curUser, setCurUser] = useState();
 	const [unitInfo, setUnitInfo] = useState();
 	const [anncmnts, setAnncmnts] = useState([{}]);
 	const [mrequest, setMRequest] = useState([{}]);
+	const [reports, setReports] = useState();
 
 	const Login = async (username, userpass, navigation) => {
 		await unitOwners.map((data, id) => {
 			if (username === data.uName && userpass === data.pw) {
-				setCurUser(data);
+				// setCurUser(data);
+
+				data.units.map((unit) => {
+					setCurUser({ ...data, tower: unit.toString().slice(0, 2) });
+				});
 
 				navigation.navigate('Home');
 			} else {
@@ -27,6 +33,39 @@ const DataProvider = ({ children }) => {
 			}
 		});
 	};
+
+	const AgentLogin = (username, userpass, navigation) => {
+		employees.map((data, id) => {
+			if (username === data.uName && userpass === data.password) {
+				if (username.includes('AG')) {
+					navigation.navigate('AgentHome');
+					setCurUser(data);
+				} else {
+					console.log('agent fslase');
+					setError(true);
+				}
+			}
+		});
+	};
+
+	useEffect(() => {
+		const q = query(
+			collection(db, 'maintenance', 'admin', 'tbl_employees')
+		);
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const employees = [];
+			querySnapshot.forEach(
+				(doc) => {
+					employees.push({ ...doc.data(), id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+			setEmployees(employees);
+		});
+		return () => unsubscribe();
+	}, []);
 
 	useEffect(() => {
 		const q = query(
@@ -101,10 +140,10 @@ const DataProvider = ({ children }) => {
 			querySnapshot.forEach(
 				(doc) => {
 					// if (curUser.uid === doc.data().RequestedBy) {
-					// 	mrequest.push({ ...doc.data(), id: doc.id });
+					mrequest.push({ ...doc.data(), id: doc.id });
 					// }
 
-					mrequest.push({ ...doc.data(), id: doc.id });
+					// mrequest.push({ ...doc.data(), id: doc.id });
 				},
 				(error) => {
 					console.log(error);
@@ -175,8 +214,27 @@ const DataProvider = ({ children }) => {
 		return () => unsubscribe();
 	}, []);
 
+	useEffect(() => {
+		const q = query(collection(db, 'maintenance', 'admin', 'tbl_reports'));
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const report = [];
+
+			querySnapshot.forEach(
+				(doc) => {
+					report.push({ ...doc.data(), id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+			setReports(report);
+		});
+		return () => unsubscribe();
+	}, []);
+
 	const value = {
 		Login,
+		AgentLogin,
 		unitOwners,
 		curUser,
 		error,
@@ -186,6 +244,7 @@ const DataProvider = ({ children }) => {
 		visitors,
 		bookings,
 		amenities,
+		reports,
 	};
 
 	return (

@@ -19,11 +19,11 @@ const OwnerLogScreen = ({ navigation }) => {
 	} = useForm();
 
 	const onLoginPressed = (data) => {
-		// let username = data['uname'];
-		// let userpass = data['pass'];
+		let username = data['uname'];
+		let userpass = data['pass'];
 
-		let username = 'Owner_111111';
-		let userpass = '1234';
+		// let username = 'Owner_111111';
+		// let userpass = '1234';
 
 		Login(username, userpass, navigation);
 		reset();

@@ -25,8 +25,9 @@ const CusTextArea = ({
 	rules = {},
 	placeholder,
 	icon,
-	w = 238,
+
 	disabled = false,
+	required,
 }) => {
 	return (
 		<Controller
@@ -35,14 +36,14 @@ const CusTextArea = ({
 			rules={rules}
 			render={({ field: { value, onChange }, fieldState: { error } }) => (
 				<>
-					<FormControl isRequired>
+					<FormControl isRequired={required}>
 						<HStack
 							justifyContent='space-between'
 							alignItems='flex-start'
 						>
 							<FormControlLabel>{icon}</FormControlLabel>
 							<Textarea
-								w={w}
+								w={required ? 238 : 250}
 								ml={10}
 								isReadOnly={disabled}
 							>

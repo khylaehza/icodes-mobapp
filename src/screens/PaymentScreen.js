@@ -20,7 +20,7 @@ import { FontAwesome5, AntDesign } from '@expo/vector-icons';
 import { useForm } from 'react-hook-form';
 import Toast from 'react-native-root-toast';
 import CusPie from '../components/CusPie';
-const PaymentScreen = () => {
+const PaymentScreen = ({ curUser }) => {
 	const insets = useSafeAreaInsets();
 	const [showModal, setShowModal] = useState(false);
 	const ref = useRef(null);
@@ -32,7 +32,11 @@ const PaymentScreen = () => {
 		watch,
 		reset,
 		// getValues,
-	} = useForm();
+	} = useForm({
+		values: {
+			request: curUser.units[0],
+		},
+	});
 
 	const onAdd = (data, e) => {
 		Toast.show('Successful', {
@@ -41,8 +45,6 @@ const PaymentScreen = () => {
 		reset();
 		setShowModal(false);
 	};
-	const location = ['Unit 1013', 'Exterior', 'Unit 5422'];
-	const [loc, setLocation] = useState('');
 
 	const tcpBreakdown = [
 		{ Name: 'Unit Amount', Amount: '₱5, 212.33' },
@@ -75,10 +77,10 @@ const PaymentScreen = () => {
 				mb={-60}
 			>
 				<Header
-					img={require('../../assets/gifs/payment.gif')}
+					img={require('../../assets/gifs/soa.gif')}
 					title={'Payments'}
 					description={
-						'View your statement of accounts and send your payment proofs to account management.'
+						'View your statement of accounts and monitor your upcoming balances.'
 					}
 				/>
 
@@ -115,16 +117,17 @@ const PaymentScreen = () => {
 					alignItems='flex-end'
 				>
 					<CusSelect
-						label={'Location'}
-						icon={''}
-						item={location}
-						value={loc}
-						setValue={setLocation}
-						placeholder={'T1-2143'}
+						name={`location`}
+						control={control}
+						item={[...curUser.units]}
+						placeholder={curUser.units[0]}
+						required={false}
 						variant={'default'}
 						textAlign='center'
 						w={120}
-						bgColor={'$white100'}
+						bgColor={'$white300'}
+						softShadow={2}
+						shadowColor='$blue300'
 					/>
 				</Box>
 				<Box
@@ -250,7 +253,7 @@ const PaymentScreen = () => {
 											style={{ fontSize: 20 }}
 										/>
 									</VStack>
-									<CusModal
+									{/* <CusModal
 										header={'BOOK AN AMENITY'}
 										setShowModal={setShowModal}
 										showModal={showModal}
@@ -281,7 +284,7 @@ const PaymentScreen = () => {
 												</VStack>
 											</Button>
 										}
-									/>
+									/> */}
 								</HStack>
 
 								{/* <Divider
@@ -312,6 +315,7 @@ const PaymentScreen = () => {
 							p={20}
 							gap={10}
 							w={'100%'}
+							mb={90}
 						>
 							<HStack
 								justifyContent={'space-between'}
@@ -497,7 +501,7 @@ const PaymentScreen = () => {
 							</Box>
 						</VStack>
 					</Box>
-					<Box
+					{/* <Box
 						alignItems='flex-start'
 						mb={90}
 					>
@@ -567,7 +571,7 @@ const PaymentScreen = () => {
 								</Button>
 							</HStack>
 						</Box>
-					</Box>
+					</Box>*/}
 				</Box>
 			</ScrollView>
 		</View>

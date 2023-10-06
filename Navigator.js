@@ -18,38 +18,69 @@ import FilesInfo from './src/screens/FilesInfo';
 import LoginScreen from './src/screens/LoginScreen';
 import UserType from './src/screens/UserType';
 import OwnerLogScreen from './src/screens/OwnerLogScreen';
+import ReportScreen from './src/screens/ReportScreen';
+import TransactionScreen from './src/screens/TransactionScreen';
+import AgentLogScreen from './src/screens/AgentLogScreen';
+import AgentHomeScreen from './src/screens/AgentHomeScreen';
+
 import DataProvider from './DataContext';
 import { useData } from './DataContext';
+import { VStack } from '@gluestack-ui/themed';
+import CusText from './src/components/CusText';
 const Stack = createNativeStackNavigator();
 function Home({ navigation }) {
 	const [expanded, setExpanded] = useState(false);
-	const { curUser, unitInfo, anncmnts, mrequest, visitors, amenities } =
-		useData();
+	const {
+		curUser,
+		unitInfo,
+		anncmnts,
+		mrequest,
+		visitors,
+		amenities,
+		bookings,
+		reports,
+	} = useData();
 
 	const _renderIcon = (routeName, selectedTab) => {
 		let icon = '';
+		let name = '';
 
 		switch (routeName) {
 			case 'Homepage':
 				icon = 'home';
+				name = 'Home';
 				break;
 			case 'Announcements':
 				icon = 'announcement';
+				name = 'Announcements';
 				break;
 			case 'Payments':
 				icon = 'payment';
+				name = 'SOA';
 				break;
 			case 'Profile':
 				icon = 'person';
+				name = 'Profile';
 				break;
 		}
 
 		return (
-			<MaterialIcons
-				name={icon}
-				size={25}
-				color={routeName === selectedTab ? '#FFF' : '#B4C4D6'}
-			/>
+			<VStack alignItems='center'>
+				<MaterialIcons
+					name={icon}
+					size={25}
+					color={routeName === selectedTab ? '#FFF' : '#B4C4D6'}
+				/>
+				<CusText
+					text={name}
+					type={'PRIMARY'}
+					style={
+						routeName === selectedTab
+							? { color: '#FFF', fontSize: 9 }
+							: { color: '#8e8e8e', fontSize: 9 }
+					}
+				/>
+			</VStack>
 		);
 	};
 	const renderTabBar = ({ routeName, selectedTab, navigate }) => {
@@ -134,6 +165,7 @@ function Home({ navigation }) {
 						setExpanded={setExpanded}
 						curUser={curUser}
 						amenities={amenities}
+						bookings={bookings}
 					/>
 				)}
 			/>
@@ -159,6 +191,17 @@ function Home({ navigation }) {
 			/>
 
 			<CurvedBottomBarExpo.Screen
+				name='Reports'
+				component={() => (
+					<ReportScreen
+						setExpanded={setExpanded}
+						navigation={navigation}
+						curUser={curUser}
+						reports={reports}
+					/>
+				)}
+			/>
+			<CurvedBottomBarExpo.Screen
 				name='UnitInfo'
 				component={() => (
 					<UnitInfo
@@ -171,8 +214,22 @@ function Home({ navigation }) {
 			/>
 			<CurvedBottomBarExpo.Screen
 				name='Payments'
-				component={() => <PaymentScreen setExpanded={setExpanded} />}
+				component={() => (
+					<PaymentScreen
+						setExpanded={setExpanded}
+						curUser={curUser}
+					/>
+				)}
 				position='RIGHT'
+			/>
+			<CurvedBottomBarExpo.Screen
+				name='Transactions'
+				component={() => (
+					<TransactionScreen
+						setExpanded={setExpanded}
+						curUser={curUser}
+					/>
+				)}
 			/>
 			<CurvedBottomBarExpo.Screen
 				name='Profile'
@@ -180,8 +237,156 @@ function Home({ navigation }) {
 					<ProfileScreen
 						setExpanded={setExpanded}
 						navigation={navigation}
+						curUser={curUser}
 					/>
 				)}
+				position='RIGHT'
+			/>
+		</CurvedBottomBarExpo.Navigator>
+	);
+}
+
+function AgentHome({ navigation }) {
+	const [expanded, setExpanded] = useState(false);
+
+	const _renderIcon = (routeName, selectedTab) => {
+		let icon = '';
+		let name = '';
+
+		switch (routeName) {
+			case 'Homepage':
+				icon = 'home';
+				name = 'Home';
+				break;
+			case 'Schedule':
+				icon = 'calendar-today';
+				name = 'Schedule';
+				break;
+			case 'Prospective':
+				icon = 'supervised-user-circle';
+				name = 'Prospective Buyers';
+				break;
+			case 'Profile':
+				icon = 'person';
+				name = 'Profile';
+				break;
+		}
+
+		return (
+			<VStack alignItems='center'>
+				<MaterialIcons
+					name={icon}
+					size={25}
+					color={routeName === selectedTab ? '#FFF' : '#B4C4D6'}
+				/>
+				<CusText
+					text={name}
+					type={'PRIMARY'}
+					style={
+						routeName === selectedTab
+							? { color: '#FFF', fontSize: 9 }
+							: { color: '#8e8e8e', fontSize: 9 }
+					}
+				/>
+			</VStack>
+		);
+	};
+	const renderTabBar = ({ routeName, selectedTab, navigate }) => {
+		return (
+			<TouchableOpacity
+				onPress={(e) => {
+					navigate(routeName);
+					setExpanded(false);
+				}}
+				style={styles.items}
+			>
+				{_renderIcon(routeName, selectedTab)}
+			</TouchableOpacity>
+		);
+	};
+
+	return (
+		<CurvedBottomBarExpo.Navigator
+			type='DOWN'
+			// style={styles.bottomBar}
+			shadowStyle={styles.shadow}
+			height={55}
+			circleWidth={50}
+			bgColor='#0f2f52'
+			initialRouteName='Homepage'
+			borderTopLeftRight
+			renderCircle={({ selectedTab, navigate }) => (
+				<Animated.View style={styles.btnCircleUp}>
+					{/* <ServicesTabs
+						navigate={navigate}
+						setExpanded={setExpanded}
+						expanded={expanded}
+					/> */}
+				</Animated.View>
+			)}
+			tabBar={renderTabBar}
+			screenOptions={{
+				headerShown: false,
+				tabBarShowLabel: false,
+			}}
+		>
+			<CurvedBottomBarExpo.Screen
+				name='Homepage'
+				component={() => <AgentHomeScreen setExpanded={setExpanded} />}
+				position='LEFT'
+			/>
+			<CurvedBottomBarExpo.Screen
+				name='Schedule'
+				// component={() => (
+				// 	<AnnouncementScreen
+				// 		setExpanded={setExpanded}
+				// 		anncmnts={anncmnts}
+				// 		curUser={curUser}
+				// 	/>
+				// )}
+				position='LEFT'
+			/>
+			{/* <CurvedBottomBarExpo.Screen
+				name='Maintenance'
+				component={() => (
+					<MaintenanceScreen
+						setExpanded={setExpanded}
+						curUser={curUser}
+						mrequest={mrequest}
+					/>
+				)}
+			/>
+			<CurvedBottomBarExpo.Screen
+				name='Visitors'
+				component={() => (
+					<VisitorsScreen
+						setExpanded={setExpanded}
+						curUser={curUser}
+						visitors={visitors}
+					/>
+				)}
+			/> */}
+
+			<CurvedBottomBarExpo.Screen
+				name='Prospective'
+				// component={() => (
+				// 	<PaymentScreen
+				// 		setExpanded={setExpanded}
+				// 		curUser={curUser}
+				// 	/>
+				// )}
+				position='RIGHT'
+			/>
+
+			<CurvedBottomBarExpo.Screen
+				name='Profile'
+				// component={() => (
+				// 	<ProfileScreen
+				// 		setExpanded={setExpanded}
+				// 		navigation={navigation}
+				// 		curUser={curUser}
+				// 	/>
+				// )}
 				position='RIGHT'
 			/>
 		</CurvedBottomBarExpo.Navigator>
@@ -206,8 +411,16 @@ const Navigator = () => {
 						component={OwnerLogScreen}
 					/>
 					<Stack.Screen
+						name='AgentLog'
+						component={AgentLogScreen}
+					/>
+					<Stack.Screen
 						name='Home'
 						component={Home}
+					/>
+					<Stack.Screen
+						name='AgentHome'
+						component={AgentHome}
 					/>
 				</Stack.Navigator>
 			</DataProvider>

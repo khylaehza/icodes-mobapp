@@ -108,10 +108,25 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 		},
 	});
 
+	const resetMedia = () => {
+		setImages({
+			images: [],
+		});
+		setVideos({
+			videos: [],
+		});
+		reset();
+	};
 	const onAdd = async (data, e) => {
 		reset();
 		clearErrors();
 		setShowModal(!showModal);
+		setImages({
+			images: [],
+		});
+		setVideos({
+			videos: [],
+		});
 
 		const folderPath = `maintenance/propertymanagement/${curUser.id}`;
 		const storageRef = (imageName, ext) =>
@@ -186,7 +201,7 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 					RequestedName: `${curUser.fName} ${curUser.lName}`,
 					MRequestID: id,
 					Unit: data.location,
-					DateRequested: serverTimestamp(),
+					CreatedDate: serverTimestamp(),
 					RepairType: data.request,
 					RequestImg: downloadURLs,
 					Details: data.details,
@@ -209,6 +224,20 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 		return (
 			<>
 				<VStack gap={10}>
+					<CusInput
+						placeholder={type}
+						name={`request`}
+						control={control}
+						icon={
+							<Ionicons
+								name='md-pricetag'
+								size={18}
+								color='#0A2542'
+							/>
+						}
+						readOnly={true}
+						required={true}
+					/>
 					<CusSelect
 						placeholder={'Location'}
 						name={`location`}
@@ -222,6 +251,7 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 						control={control}
 						item={[...curUser.units, 'Exterior']}
 						rules={{ required: 'Location is required.' }}
+						required={true}
 					/>
 					<CusTextArea
 						placeholder={'State the problem here...'}
@@ -235,20 +265,9 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 						}
 						name={`details`}
 						rules={{ required: 'Details is required.' }}
+						required={true}
 					/>
-					<CusInput
-						placeholder={type}
-						name={`request`}
-						control={control}
-						icon={
-							<Ionicons
-								name='md-pricetag'
-								size={18}
-								color='#0A2542'
-							/>
-						}
-						readOnly={true}
-					/>
+
 					<CusMediaPicker
 						icon={
 							<Ionicons
@@ -263,6 +282,7 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 						setImages={setImages}
 						img={img}
 						vid={vid}
+						required={true}
 					/>
 				</VStack>
 			</>
@@ -298,7 +318,6 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 							/>
 						}
 						name={`details`}
-						rules={{ required: 'Details is required.' }}
 						disabled={true}
 					/>
 					<CusInput
@@ -375,7 +394,7 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 							header={'CREATE A REQUEST'}
 							handleSubmit={handleSubmit}
 							onAdd={onAdd}
-							reset={reset}
+							reset={resetMedia}
 							clearErrors={clearErrors}
 							body={<ModalBody />}
 							showModal={showModal}
@@ -421,53 +440,66 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 
 			<ScrollView showsVerticalScrollIndicator={false}>
 				<Box mb={50}>
-					{status.map((stat, skey) => (
-						<Box
-							padding={20}
-							rounded={15}
-							bgColor='#FFF'
-							gap={2}
-							hardShadow={4}
-							shadowColor='$blue200'
-							key={skey}
-							mb={20}
-						>
-							<HStack
-								gap={8}
-								alignItems='center'
-							>
-								<Image
-									source={stat.icon}
-									h={16}
-									w={16}
-									objectFit='contain'
-								/>
-								<CusText
-									type={'TERTIARY'}
-									text={stat.name}
-								/>
-							</HStack>
-							<Divider my='$0.5' />
+					{status.map((stat, skey) => {
+						var hasMatch =
+							mrequest.filter((element) => {
+								return (
+									element.Status == stat.name &&
+									curUser.uid === element.RequestedBy
+								);
+							}).length > 0;
 
-							{mrequest.map((data, mkey) => {
-								if (
-									curUser.uid == data.RequestedBy &&
-									stat.name == data.Status
-								) {
-									return (
+						return (
+							<Box
+								padding={20}
+								rounded={15}
+								bgColor='#FFF'
+								gap={2}
+								hardShadow={4}
+								shadowColor='$blue200'
+								key={skey}
+								mb={20}
+							>
+								<HStack
+									gap={8}
+									alignItems='center'
+								>
+									<Image
+										source={stat.icon}
+										h={16}
+										w={16}
+										objectFit='contain'
+									/>
+									<CusText
+										type={'TERTIARY'}
+										text={stat.name}
+									/>
+								</HStack>
+								<Divider my='$1.5' />
+
+								{mrequest
+									.filter((element) => {
+										return (
+											element.Status == stat.name &&
+											curUser.uid === element.RequestedBy
+										);
+									})
+									.map((data, mkey) => (
 										<HStack
 											pr={5}
 											pl={5}
 											justifyContent='space-between'
 											alignItems='center'
 											key={mkey}
+											mb={-3}
 										>
 											<CusText
 												type={'SECONDARY'}
 												text={`Ticket #${data.MRequestID}`}
-												style={{ textAlign: 'left' }}
+												style={{
+													textAlign: 'left',
+												}}
 											/>
-
 											<CusModalView
 												header={`Ticket #${data.MRequestID}`}
 												body={<ModalView data={data} />}
@@ -487,7 +519,6 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 															style={{
 																textAlign:
 																	'left',
-
 																fontSize: 12,
 															}}
 															color='#0A2542'
@@ -496,19 +527,19 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 												}
 											/>
 										</HStack>
-									);
-								} else if (curUser.uid == data.RequestedBy) {
-									return (
-										<CusText
-											type={'SECONDARY'}
-											text={'No Available Data.'}
-											style={{ textAlign: 'left' }}
-										/>
-									);
-								}
-							})}
-						</Box>
-					))}
+									))}
+								{!hasMatch && (
+									<CusText
+										type={'SECONDARY'}
+										text={`No data available.`}
+										style={{
+											textAlign: 'center',
+										}}
+									/>
+								)}
+							</Box>
+						);
+					})}
 				</Box>
 			</ScrollView>
 		</View>

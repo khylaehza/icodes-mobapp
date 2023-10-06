@@ -13,7 +13,7 @@ const CusInput = ({
 	name,
 	rules = {},
 	placeholder,
-	isRequired = true,
+	required,
 	keyboardType,
 	type,
 	maxLength,
@@ -29,7 +29,7 @@ const CusInput = ({
 			rules={rules}
 			render={({ field: { value, onChange }, fieldState: { error } }) => (
 				<>
-					<FormControl isRequired={isRequired}>
+					<FormControl isRequired={required}>
 						<HStack
 							justifyContent='space-between'
 							alignItems='center'

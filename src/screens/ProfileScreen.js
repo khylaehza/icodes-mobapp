@@ -22,14 +22,48 @@ import {
 	Feather,
 	AntDesign,
 } from '@expo/vector-icons';
-import { useData } from '../../DataContext';
-const ProfileScreen = ({ navigation }) => {
-	const insets = useSafeAreaInsets();
-	const { curUser } = useData();
 
+const ProfileScreen = ({ navigation, curUser }) => {
+	const insets = useSafeAreaInsets();
+
+	const other = [
+		{
+			name: 'Reports & Feedback',
+			icon: (
+				<Octicons
+					name='report'
+					size={18}
+					color='black'
+				/>
+			),
+			nav: 'Reports',
+		},
+		{
+			name: 'Terms & Conditions',
+			icon: (
+				<Ionicons
+					name='information-circle-outline'
+					size={22}
+					color='black'
+				/>
+			),
+			nav: '',
+		},
+		{
+			name: 'Logout',
+			icon: (
+				<Feather
+					name='log-out'
+					size={19}
+					color='black'
+				/>
+			),
+			nav: 'Login',
+		},
+	];
 	const items = [
 		{
-			name: 'Profile',
+			name: 'My Information',
 			icon: (
 				<AntDesign
 					name='profile'
@@ -41,7 +75,7 @@ const ProfileScreen = ({ navigation }) => {
 			action: 'OwnerInfo',
 		},
 		{
-			name: 'Units',
+			name: 'My Unit',
 			icon: (
 				<Octicons
 					name='home'
@@ -53,7 +87,7 @@ const ProfileScreen = ({ navigation }) => {
 			action: 'UnitInfo',
 		},
 		{
-			name: 'Files',
+			name: 'My Files',
 			icon: (
 				<MaterialCommunityIcons
 					name='file-document-multiple-outline'
@@ -153,9 +187,7 @@ const ProfileScreen = ({ navigation }) => {
 								<Button
 									variant='link'
 									onPress={() => {
-										navigation.navigate(item.action, {
-											params: 'name',
-										});
+										navigation.navigate(item.action);
 									}}
 								>
 									<Ionicons
@@ -170,72 +202,40 @@ const ProfileScreen = ({ navigation }) => {
 				))}
 
 				<Divider mt={5} />
-
-				<Box
-					rounded={15}
-					alignItems='center'
-					justifyContent='space-between'
-				>
-					<HStack
-						w={'100%'}
-						alignItems={'center'}
-					>
-						<Box w={'15%'}>
-							<Ionicons
-								name='information-circle-outline'
-								size={24}
-								color='black'
-							/>
-						</Box>
-
-						<CusText
-							type={'TERTIARY'}
-							text={'Terms & Conditions'}
-							style={{
-								fontSize: 15,
-								textAlign: 'left',
-							}}
-						/>
-					</HStack>
-				</Box>
-
-				<Box
-					rounded={15}
-					alignItems='center'
-					justifyContent='space-between'
-					p={10}
-				>
-					<Button
-						onPress={() => navigation.navigate('Login')}
-						variant='link'
-					>
-						<HStack
-							// justifyContent={'space-between'}
-							w={'100%'}
-							alignItems={'center'}
+				<VStack>
+					{other.map((item, okey) => (
+						<Button
+							onPress={() => navigation.navigate(item.nav)}
+							variant='link'
+							key={okey}
 						>
-							<Box
-								w={'15%'}
-								ml={-5}
+							<HStack
+								justifyContent={'flex-start'}
+								w={'100%'}
+								alignItems={'center'}
 							>
-								<Feather
-									name='log-out'
-									size={20}
-									color='black'
-								/>
-							</Box>
+								<Box
+									w={'10%'}
+									alignItems='center'
+									mr={10}
+								>
+									{item.icon}
+								</Box>
 
-							<CusText
-								type={'TERTIARY'}
-								text={'Logout'}
-								style={{
-									fontSize: 15,
-									textAlign: 'left',
-								}}
-							/>
-						</HStack>
-					</Button>
-				</Box>
+								<Box w={'80%'}>
+									<CusText
+										type={'TERTIARY'}
+										text={item.name}
+										style={{
+											fontSize: 15,
+											textAlign: 'left',
+										}}
+									/>
+								</Box>
+							</HStack>
+						</Button>
+					))}
+				</VStack>
 			</VStack>
 		</View>
 	);

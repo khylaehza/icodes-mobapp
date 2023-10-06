@@ -16,6 +16,8 @@ const config = createConfig({
 			blue300: '#0A2542',
 			red100: '#B91E23',
 			gray100: '#D0D0D0',
+			gray200: '#a9a9a9',
+			gray300: '#8e8e8e',
 			yellow100: '#FFC739',
 		},
 	},

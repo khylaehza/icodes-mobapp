@@ -77,6 +77,7 @@ const UserType = ({ navigation }) => {
 					shadowColor='$blue300'
 					w={200}
 					h={200}
+					onPress={() => navigation.navigate('AgentLog')}
 				>
 					<VStack
 						alignItems='center'

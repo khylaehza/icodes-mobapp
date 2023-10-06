@@ -23,18 +23,20 @@ import moment from 'moment';
 import { IdGenerator } from '../utilities/IdGenerator';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
+import CusModalView from '../components/CusModalView';
 
-const AmenitiesScreen = ({ curUser, amenities }) => {
+const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 	const insets = useSafeAreaInsets();
 
 	const status = [
-		{
-			name: 'Current Bookings',
-			icon: require('../../assets/imgs/wip.png'),
-		},
+		{ name: 'Active', icon: require('../../assets/imgs/wip.png') },
+		{ name: 'Pending', icon: require('../../assets/imgs/pending.png') },
+		{ name: 'Completed', icon: require('../../assets/imgs/done.png') },
 	];
+
 	const [showModal, setShowModal] = useState(false);
 	const ref = useRef(null);
+	const [showDet, setShowDet] = useState(false);
 	const [selectedDate, setSelectedDate] = useState();
 	const [ame, setAme] = useState('');
 	const id = IdGenerator();
@@ -44,15 +46,23 @@ const AmenitiesScreen = ({ curUser, amenities }) => {
 		formState: { errors },
 		watch,
 		reset,
-		// getValues,
+		clearErrors,
 	} = useForm({
 		values: {
 			request: ame,
 		},
 	});
 
+	const resetFields = () => {
+		reset();
+		setSelectedDate();
+	};
+
 	const onAdd = (data, e) => {
-		console.log(data, moment(selectedDate).format('MM/DD/YYYY'));
+		reset();
+		setShowModal(false);
+		setSelectedDate('');
+		clearErrors();
 		try {
 			addDoc(
 				collection(db, 'maintenance', 'frontdesk', 'tbl_BAmenities'),
@@ -60,19 +70,16 @@ const AmenitiesScreen = ({ curUser, amenities }) => {
 					RequestedBy: curUser.uid,
 					Name: `${curUser.fName} ${curUser.lName}`,
 					BookingID: id,
-					// TNum: value.tower,
-
 					AmenityType: data.request,
 					Date: moment(selectedDate).format('MM/DD/YYYY'),
 					NumPerson: data.number,
 					Status: 'Pending',
+					CreatedDate: serverTimestamp(),
 				}
 			);
 			Toast.show('Successful', {
 				duration: Toast.durations.SHORT,
 			});
-			reset();
-			setShowModal(false);
 		} catch (e) {
 			Toast.show('Failed', {
 				duration: Toast.durations.SHORT,
@@ -97,8 +104,8 @@ const AmenitiesScreen = ({ curUser, amenities }) => {
 							/>
 						}
 						readOnly={true}
+						required={true}
 					/>
-
 					<CusDatePicker
 						selectedDate={selectedDate}
 						setSelectedDate={setSelectedDate}
@@ -111,7 +118,6 @@ const AmenitiesScreen = ({ curUser, amenities }) => {
 						}
 						mode={'date'}
 					/>
-
 					<CusInput
 						placeholder={'Number of Person'}
 						name={`number`}
@@ -124,7 +130,85 @@ const AmenitiesScreen = ({ curUser, amenities }) => {
 							/>
 						}
 						keyboardType={'number-pad'}
+						required={true}
 					/>
+				</VStack>
+			</>
+		);
+	};
+
+	const ModalView = ({ data }) => {
+		return (
+			<>
+				<VStack gap={20}>
+					<HStack
+						justifyContent='space-between'
+						alignItems='center'
+					>
+						<Ionicons
+							name='md-pricetag'
+							size={18}
+							color='#0A2542'
+						/>
+
+						<Box
+							w={245}
+							borderBottomWidth={1}
+							borderBottomColor='$gray100'
+							pb={5}
+						>
+							<CusText
+								text={data.AmenityType}
+								type={'PRIMARY'}
+								style={{ color: '#8e8e8e' }}
+							/>
+						</Box>
+					</HStack>
+					<HStack
+						justifyContent='space-between'
+						alignItems='center'
+					>
+						<AntDesign
+							name='calendar'
+							size={22}
+							color='#0A2542'
+						/>
+						<Box
+							w={245}
+							borderBottomWidth={1}
+							borderBottomColor='$gray100'
+							pb={5}
+						>
+							<CusText
+								text={data.Date}
+								type={'PRIMARY'}
+								style={{ color: '#8e8e8e' }}
+							/>
+						</Box>
+					</HStack>
+					<HStack
+						justifyContent='space-between'
+						alignItems='center'
+					>
+						<Ionicons
+							name='ios-people'
+							size={23}
+							color='#0A2542'
+						/>
+
+						<Box
+							w={245}
+							borderBottomWidth={1}
+							borderBottomColor='$gray100'
+							pb={5}
+						>
+							<CusText
+								text={data.NumPerson}
+								type={'PRIMARY'}
+								style={{ color: '#8e8e8e' }}
+							/>
+						</Box>
+					</HStack>
 				</VStack>
 			</>
 		);
@@ -134,7 +218,6 @@ const AmenitiesScreen = ({ curUser, amenities }) => {
 			style={{
 				flex: 1,
 				paddingTop: insets.top,
-
 				padding: 20,
 			}}
 		>
@@ -171,170 +254,198 @@ const AmenitiesScreen = ({ curUser, amenities }) => {
 							alignItems='center'
 							mt={10}
 						>
-							{amenities.map((data, key) => (
-								<Box
-									rounded={15}
-									bgColor='$white300'
-									borderWidth={1}
-									borderColor='$blue100'
-									hardShadow='4'
-									shadowColor='$blue300'
-									key={key}
-								>
-									<Image
-										source={{ uri: data.AmenityImg }}
-										width={200}
-										h={120}
-										borderTopLeftRadius={15}
-										borderTopRightRadius={15}
-										objectFit='contain'
-									/>
-
-									<CusModal
-										header={'BOOK AN AMENITY'}
-										setShowModal={setShowModal}
-										showModal={showModal}
-										handleSubmit={handleSubmit}
-										onAdd={onAdd}
-										reset={reset}
-										body={<Body />}
-										button={
-											<Button
-												size={'xs'}
-												variant='solid'
-												position='absolute'
-												bottom={45}
-												right={5}
-												bgColor='$blue300'
-												borderColor='$blue250'
-												borderWidth={1}
-												shadowColor='$blue300'
-												hardShadow='4'
-												onPress={() => {
-													setShowModal(true);
-													setAme(data.AmenityName);
-												}}
-												ref={ref}
-											>
-												<CusText
-													type={'SECONDARY'}
-													text={'Book'}
-													style={{
-														fontSize: 14,
-														color: '#FFF',
-													}}
-												/>
-											</Button>
-										}
-									/>
-									<HStack
-										// bgColor='#C2CDD8'
-										p={10}
-										borderBottomLeftRadius={15}
-										borderBottomRightRadius={15}
-										justifyContent='space-between'
+							{amenities
+								.filter((element) => {
+								
+									return (
+										curUser.tower ==
+										element.TNum.slice(-3, -1)
+									);
+								})
+								.map((data, key) => (
+									<Box
+										rounded={15}
+										bgColor='$white300'
+										borderWidth={1}
+										borderColor='$blue100'
+										hardShadow='4'
+										shadowColor='$blue300'
+										key={key}
 									>
-										<CusText
-											type={'SECONDARY'}
-											text={data.AmenityName}
-											style={{ fontSize: 14 }}
+										<Image
+											source={{ uri: data.AmenityImg }}
+											width={200}
+											h={120}
+											borderTopLeftRadius={15}
+											borderTopRightRadius={15}
+											objectFit='contain'
 										/>
-										<CusText
-											type={'PRIMARY'}
-											text={data.Capacity}
-											style={{ fontSize: 14 }}
+
+										<CusModal
+											header={'BOOK AN AMENITY'}
+											setShowModal={setShowModal}
+											showModal={showModal}
+											handleSubmit={handleSubmit}
+											onAdd={onAdd}
+											reset={resetFields}
+											clearErrors={clearErrors}
+											body={<Body />}
+											button={
+												<Button
+													size={'xs'}
+													variant='solid'
+													position='absolute'
+													bottom={45}
+													right={5}
+													bgColor='$blue300'
+													borderColor='$blue250'
+													borderWidth={1}
+													shadowColor='$blue300'
+													hardShadow='4'
+													onPress={() => {
+														setShowModal(true);
+														setAme(
+															data.AmenityName
+														);
+													}}
+													ref={ref}
+												>
+													<CusText
+														type={'SECONDARY'}
+														text={'Book'}
+														style={{
+															fontSize: 14,
+															color: '#FFF',
+														}}
+													/>
+												</Button>
+											}
 										/>
-									</HStack>
-								</Box>
-							))}
+										<HStack
+											// bgColor='#C2CDD8'
+											p={10}
+											borderBottomLeftRadius={15}
+											borderBottomRightRadius={15}
+											justifyContent='space-between'
+										>
+											<CusText
+												type={'SECONDARY'}
+												text={data.AmenityName}
+												style={{ fontSize: 14 }}
+											/>
+											<CusText
+												type={'PRIMARY'}
+												text={`Capacity: ${data.Capacity}`}
+												style={{ fontSize: 14 }}
+											/>
+										</HStack>
+									</Box>
+								))}
 						</HStack>
 					</ScrollView>
 				</Box>
 			</Center>
 			<ScrollView showsVerticalScrollIndicator={false}>
-				<Box>
-					{status.map((stat, key) => (
-						<Box
-							padding={20}
-							rounded={15}
-							bgColor='#FFF'
-							gap={2}
-							hardShadow={4}
-							shadowColor='$blue200'
-							key={key}
-							mb={20}
-						>
-							<HStack
-								gap={8}
-								alignItems='center'
-							>
-								<Image
-									source={stat.icon}
-									h={16}
-									w={16}
-									objectFit='contain'
-								/>
-								<CusText
-									type={'TERTIARY'}
-									text={stat.name}
-								/>
-							</HStack>
-							<Divider my='$0.5' />
+				<Box mb={50}>
+					{status.map((stat, key) => {
+						var hasMatch =
+							bookings.filter((element) => {
+								return (
+									element.Status == stat.name &&
+									curUser.uid === element.RequestedBy
+								);
+							}).length > 0;
 
-							<HStack
-								p={5}
-								justifyContent='space-between'
-								alignItems='center'
+						return (
+							<Box
+								padding={20}
+								rounded={15}
+								bgColor='#FFF'
+								gap={2}
+								hardShadow={4}
+								shadowColor='$blue200'
+								key={key}
+								mb={20}
 							>
-								<CusText
-									type={'SECONDARY'}
-									text={'Ticket #2132323'}
-									style={{ textAlign: 'left' }}
-								/>
-
-								<Pressable
-									variant='link'
-									size='xs'
+								<HStack
+									gap={8}
+									alignItems='center'
 								>
+									<Image
+										source={stat.icon}
+										h={16}
+										w={16}
+										objectFit='contain'
+									/>
 									<CusText
-										type={'PRIMARY'}
-										text={'View Status >'}
+										type={'TERTIARY'}
+										text={stat.name}
+									/>
+								</HStack>
+								<Divider my='$1.5' />
+								{bookings
+									.filter((element) => {
+										return (
+											element.Status == stat.name &&
+											curUser.uid === element.RequestedBy
+										);
+									})
+									.map((data, akey) => (
+										<HStack
+											pr={5}
+											pl={5}
+											justifyContent='space-between'
+											alignItems='center'
+											key={akey}
+											mb={-3}
+										>
+											<CusText
+												type={'SECONDARY'}
+												text={`Booking #${data.BookingID}`}
+												style={{ textAlign: 'left' }}
+											/>
+
+											<CusModalView
+												header={`Booking #${data.BookingID}`}
+												body={<ModalView data={data} />}
+												showModal={showDet}
+												setShowModal={setShowDet}
+												button={
+													<Button
+														variant='link'
+														size='xs'
+														onPress={() => {
+															setShowDet(true);
+														}}
+													>
+														<CusText
+															type={'PRIMARY'}
+															text={'View Info >'}
+															style={{
+																textAlign:
+																	'left',
+
+																fontSize: 12,
+															}}
+															color='#0A2542'
+														/>
+													</Button>
+												}
+											/>
+										</HStack>
+									))}
+								{!hasMatch && (
+									<CusText
+										type={'SECONDARY'}
+										text={`No data available.`}
 										style={{
-											textAlign: 'left',
-											color: '#0A2542',
-											fontSize: 12,
+											textAlign: 'center',
 										}}
 									/>
-								</Pressable>
-							</HStack>
-							<HStack
-								p={5}
-								justifyContent='space-between'
-								alignItems='center'
-							>
-								<CusText
-									type={'SECONDARY'}
-									text={'Ticket #2132323'}
-									style={{ textAlign: 'left' }}
-								/>
-
-								<Pressable
-									variant='link'
-									size='xs'
-								>
-									<CusText
-										type={'PRIMARY'}
-										text={'View Status >'}
-										style={{
-											textAlign: 'left',
-											color: '#0A2542',
-											fontSize: 12,
-										}}
-									/>
-								</Pressable>
-							</HStack>
-						</Box>
-					))}
+								)}
+							</Box>
+						);
+					})}
 				</Box>
 			</ScrollView>
 		</View>

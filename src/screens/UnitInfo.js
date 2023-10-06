@@ -12,6 +12,7 @@ import { View, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CusText from '../components/CusText';
 import CusPager from '../components/CusPager';
+import DateChecker from '../utilities/DateChecker';
 const UnitInfo = ({ navigation, curUser, unitInfo }) => {
 	const insets = useSafeAreaInsets();
 
@@ -109,6 +110,10 @@ const UnitInfo = ({ navigation, curUser, unitInfo }) => {
 						<>
 							{data.units.map((un) => {
 								if (curUser.units.includes(un)) {
+									const date = data.createdDate
+										? data.createdDate.seconds * 1000
+										: '';
+								
 									return (
 										<Box
 											padding={10}
@@ -132,13 +137,44 @@ const UnitInfo = ({ navigation, curUser, unitInfo }) => {
 													text={curUser.units.toString()}
 												/>
 
+												<HStack>
+													<CusText
+														type={'SECONDARY'}
+														style={{
+															textAlign:
+																'justify',
+															fontSize: 12,
+														}}
+														text={
+															'Purchased Date: '
+														}
+													/>
+													<CusText
+														type={'SECONDARY'}
+														style={{
+															textAlign:
+																'justify',
+															fontSize: 12,
+														}}
+														text={
+															<DateChecker
+																dateToCheck={
+																	new Date(
+																		date
+																	)
+																}
+															/>
+														}
+													/>
+												</HStack>
+
 												<CusText
 													type={'SECONDARY'}
 													style={{
 														textAlign: 'justify',
 														fontSize: 12,
 													}}
-													text={`Date Acquired: ${data.typeName}`}
+													text={`Size: ${data.unitSize} sq. meters`}
 												/>
 												<CusText
 													type={'SECONDARY'}
@@ -146,7 +182,7 @@ const UnitInfo = ({ navigation, curUser, unitInfo }) => {
 														textAlign: 'justify',
 														fontSize: 12,
 													}}
-													text={`Status: ${data.unitSize}`}
+													text={`Type: ${data.typeName}`}
 												/>
 											</Box>
 										</Box>

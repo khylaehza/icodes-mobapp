@@ -38,6 +38,12 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 	const [selectedDate, setSelectedDate] = useState();
 	const [counter, setCounter] = useState(0);
 
+	const resetFields = () => {
+		reset();
+		setSelectedDate();
+		setCounter(0);
+	};
+
 	const addPerson = () => {
 		setCounter(counter + 1);
 	};
@@ -62,6 +68,7 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 		reset();
 		setShowModal(false);
 		setCounter(0);
+		clearErrors();
 		setSelectedDate('');
 
 		try {
@@ -76,6 +83,7 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 					Date: moment(selectedDate).format('MM/DD/YYYY'),
 					Purpose: data.purpose,
 					Status: 'Pending',
+					CreatedDate: serverTimestamp(),
 				}
 			);
 
@@ -150,6 +158,7 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 											color='#0A2542'
 										/>
 									}
+									required={true}
 								/>
 								{/* <Button
 									onPress={() => deletePerson(index)}
@@ -182,6 +191,7 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 						item={[...curUser.units]}
 						rules={{ required: 'Location is required.' }}
 						placeholder={'Location'}
+						required={true}
 					/>
 					{/* <CusSelect
 						name={`purpose`}
@@ -211,6 +221,7 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 								color='#0A2542'
 							/>
 						}
+						required={true}
 					/>
 				</VStack>
 			</>
@@ -218,7 +229,6 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 	};
 
 	const ModalView = ({ data }) => {
-		console.log(data.VisitorName);
 		return (
 			<>
 				<VStack gap={20}>
@@ -240,6 +250,7 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 							<CusText
 								text={data.Date}
 								type={'PRIMARY'}
+								style={{ color: '#8e8e8e' }}
 							/>
 						</Box>
 					</HStack>
@@ -253,18 +264,18 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 							<Ionicons
 								name='ios-people'
 								size={23}
-								color='#0A2542'
 							/>
 
 							<Box
 								w={245}
-								borderBottomWidth={1}
+								borderBottomWidth={0.8}
 								borderBottomColor='$gray100'
 								pb={5}
 							>
 								<CusText
 									text={name}
 									type={'PRIMARY'}
+									style={{ color: '#8e8e8e' }}
 								/>
 							</Box>
 						</HStack>
@@ -289,6 +300,7 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 							<CusText
 								text={data.Unit}
 								type={'PRIMARY'}
+								style={{ color: '#8e8e8e' }}
 							/>
 						</Box>
 					</HStack>
@@ -312,6 +324,7 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 							<CusText
 								text={data.Purpose}
 								type={'PRIMARY'}
+								style={{ color: '#8e8e8e' }}
 							/>
 						</Box>
 					</HStack>
@@ -349,7 +362,8 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 					showModal={showModal}
 					handleSubmit={handleSubmit}
 					onAdd={onAdd}
-					reset={reset}
+					reset={resetFields}
+					clearErrors={clearErrors}
 					body={<Body />}
 					button={
 						<Button
@@ -371,45 +385,58 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 			</Center>
 			<ScrollView showsVerticalScrollIndicator={false}>
 				<Box mb={50}>
-					{status.map((stat, key) => (
-						<Box
-							padding={20}
-							rounded={15}
-							bgColor='#FFF'
-							gap={2}
-							hardShadow={4}
-							shadowColor='$blue200'
-							key={key}
-							mb={20}
-						>
-							<HStack
-								gap={8}
-								alignItems='center'
+					{status.map((stat, key) => {
+						var hasMatch =
+							visitors.filter((element) => {
+								return (
+									element.Status == stat.name &&
+									curUser.uid === element.RequestedBy
+								);
+							}).length > 0;
+
+						return (
+							<Box
+								padding={20}
+								rounded={15}
+								bgColor='#FFF'
+								gap={2}
+								hardShadow={4}
+								shadowColor='$blue200'
+								key={key}
+								mb={20}
 							>
-								<Image
-									source={stat.icon}
-									h={16}
-									w={16}
-									objectFit='contain'
-								/>
-								<CusText
-									type={'TERTIARY'}
-									text={stat.name}
-								/>
-							</HStack>
-							<Divider my='$0.5' />
-							{visitors.map((data, vkey) => {
-								console.log(data);
-								if (
-									curUser.uid == data.RequestedBy &&
-									stat.name == data.Status
-								) {
-									return (
+								<HStack
+									gap={8}
+									alignItems='center'
+								>
+									<Image
+										source={stat.icon}
+										h={16}
+										w={16}
+										objectFit='contain'
+									/>
+									<CusText
+										type={'TERTIARY'}
+										text={stat.name}
+									/>
+								</HStack>
+								<Divider my='$1.5' />
+
+								{visitors
+									.filter((element) => {
+										return (
+											element.Status == stat.name &&
+											curUser.uid === element.RequestedBy
+										);
+									})
+									.map((data, vkey) => (
 										<HStack
-											p={5}
+											pr={5}
+											pl={5}
 											justifyContent='space-between'
 											alignItems='center'
 											key={vkey}
+											mb={-3}
 										>
 											<CusText
 												type={'SECONDARY'}
@@ -445,19 +472,19 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 												}
 											/>
 										</HStack>
-									);
-								} else if (curUser.uid == data.RequestedBy) {
-									return (
-										<CusText
-											type={'SECONDARY'}
-											text={'No Available Data.'}
-											style={{ textAlign: 'left' }}
-										/>
-									);
-								}
-							})}
-						</Box>
-					))}
+									))}
+								{!hasMatch && (
+									<CusText
+										type={'SECONDARY'}
+										text={`No data available.`}
+										style={{
+											textAlign: 'center',
+										}}
+									/>
+								)}
+							</Box>
+						);
+					})}
 				</Box>
 			</ScrollView>
 		</View>
