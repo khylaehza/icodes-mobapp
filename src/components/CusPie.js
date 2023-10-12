@@ -1,7 +1,7 @@
 import { PieChart } from 'react-native-gifted-charts';
 import { Box, Text } from '@gluestack-ui/themed';
 import CusText from './CusText';
-// import * as Svg from 'react-native-svg';
+
 const CusPie = () => {
 	const pieData = [
 		{ value: 70, color: '#EEE' },

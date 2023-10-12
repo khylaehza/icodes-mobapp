@@ -9,7 +9,7 @@ export function useData() {
 }
 
 const DataProvider = ({ children }) => {
-	const [employees, setEmployees] = useState([{}]);
+	const [employees, setEmployees] = useState();
 	const [unitOwners, setUnitOwners] = useState();
 	const [error, setError] = useState(false);
 	const [curUser, setCurUser] = useState();
@@ -34,16 +34,15 @@ const DataProvider = ({ children }) => {
 		});
 	};
 
-	const AgentLogin = (username, userpass, navigation) => {
-		employees.map((data, id) => {
-			if (username === data.uName && userpass === data.password) {
-				if (username.includes('AG')) {
-					navigation.navigate('AgentHome');
-					setCurUser(data);
-				} else {
-					console.log('agent fslase');
-					setError(true);
-				}
+	const AgentLogin = async (username, userpass, navigation) => {
+		await employees.map((data, id) => {
+			if (
+				username === data.uName &&
+				userpass === data.password &&
+				username.includes('AG')
+			) {
+				setCurUser(data);
+				navigation.navigate('AgentHome');
 			}
 		});
 	};
@@ -232,6 +231,7 @@ const DataProvider = ({ children }) => {
 		return () => unsubscribe();
 	}, []);
 
+	console.log(curUser);
 	const value = {
 		Login,
 		AgentLogin,

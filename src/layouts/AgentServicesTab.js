@@ -5,7 +5,7 @@ import { FontAwesome5, AntDesign } from '@expo/vector-icons';
 import { Image, VStack } from '@gluestack-ui/themed';
 import CusText from '../components/CusText';
 
-export default function ServicesTab({ navigate, expanded, setExpanded }) {
+const AgentServicesTab = ({ navigate, expanded, setExpanded }) => {
 	return (
 		<View style={{ position: 'relative', alignItems: 'center' }}>
 			<Pressable
@@ -59,7 +59,7 @@ export default function ServicesTab({ navigate, expanded, setExpanded }) {
 			</AnimatePresence>
 		</View>
 	);
-}
+};
 
 function ActionButton({ action, index, navigate, setExpanded, expanded }) {
 	return (
@@ -82,7 +82,7 @@ function ActionButton({ action, index, navigate, setExpanded, expanded }) {
 				onPress={() => {
 					setExpanded(false);
 					// expanded ? navigate(action.location) : console.log('ame');
-					navigate(action.location);
+					navigate(action.nav);
 				}}
 				style={[
 					styles.button,
@@ -141,36 +141,32 @@ const styles = StyleSheet.create({
 
 const actions = [
 	{
-		location: 'Maintenance',
+		location: 'Unit Designer',
 		color: '#3f4c6e',
 		emoji: '👨🏻‍🚒',
 		border: '#0A2542',
-		img: require('../../assets/imgs/maintenance.png'),
+		img: require('../../assets/imgs/designer.png'),
 		fColor: '#FFF',
+		nav: 'Designer',
 	},
 	{
-		location: 'Visitors',
+		location: 'Unit Finder',
 		color: '#7e879e',
 		emoji: '📸',
 		border: '#3f4c6e',
-		img: require('../../assets/imgs/id-card.png'),
+		img: require('../../assets/imgs/finder.png'),
 		fColor: '#F5F5F5',
+		nav: 'Finder',
 	},
 
-	{
-		location: 'Amenities',
-		color: '#bdc2cd',
-		emoji: '🌊',
-		border: '#7e879e',
-		img: require('../../assets/imgs/booking.png'),
-		fColor: '#0A2542',
-	},
-	{
-		location: 'Transactions',
-		color: '#dee3f0',
-		emoji: '🌊',
-		border: '#bdc2cd',
-		img: require('../../assets/imgs/payment.png'),
-		fColor: '#081d33',
-	},
+	// {
+	// 	location: 'Unit Calculator',
+	// 	color: '#bdc2cd',
+	// 	emoji: '🌊',
+	// 	border: '#7e879e',
+	// 	img: require('../../assets/imgs/booking.png'),
+	// 	fColor: '#0A2542',
+	// },
 ];
+
+export default AgentServicesTab;

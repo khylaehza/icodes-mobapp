@@ -22,11 +22,19 @@ import ReportScreen from './src/screens/ReportScreen';
 import TransactionScreen from './src/screens/TransactionScreen';
 import AgentLogScreen from './src/screens/AgentLogScreen';
 import AgentHomeScreen from './src/screens/AgentHomeScreen';
+import ScheduleScreen from './src/screens/ScheduleScreen';
+import BuyersScreen from './src/screens/BuyersScreen';
+import AgentProfileScreen from './src/screens/AgentProfileScreen';
+import AgentServicesTab from './src/layouts/AgentServicesTab';
+import FinderScreen from './src/layouts/FinderScreen';
+import DesignerScreen from './src/layouts/DesignerScreen';
+// import InteractiveScreen from './src/screens/InteractiveScreen';
 
 import DataProvider from './DataContext';
 import { useData } from './DataContext';
 import { VStack } from '@gluestack-ui/themed';
 import CusText from './src/components/CusText';
+
 const Stack = createNativeStackNavigator();
 function Home({ navigation }) {
 	const [expanded, setExpanded] = useState(false);
@@ -248,7 +256,7 @@ function Home({ navigation }) {
 
 function AgentHome({ navigation }) {
 	const [expanded, setExpanded] = useState(false);
-
+	const { curUser } = useData();
 	const _renderIcon = (routeName, selectedTab) => {
 		let icon = '';
 		let name = '';
@@ -317,11 +325,11 @@ function AgentHome({ navigation }) {
 			borderTopLeftRight
 			renderCircle={({ selectedTab, navigate }) => (
 				<Animated.View style={styles.btnCircleUp}>
-					{/* <ServicesTabs
+					<AgentServicesTab
 						navigate={navigate}
 						setExpanded={setExpanded}
 						expanded={expanded}
-					/> */}
+					/>
 				</Animated.View>
 			)}
 			tabBar={renderTabBar}
@@ -332,61 +340,73 @@ function AgentHome({ navigation }) {
 		>
 			<CurvedBottomBarExpo.Screen
 				name='Homepage'
-				component={() => <AgentHomeScreen setExpanded={setExpanded} />}
+				component={() => (
+					<AgentHomeScreen
+						setExpanded={setExpanded}
+						curUser={curUser}
+					/>
+				)}
 				position='LEFT'
 			/>
 			<CurvedBottomBarExpo.Screen
 				name='Schedule'
-				// component={() => (
-				// 	<AnnouncementScreen
-				// 		setExpanded={setExpanded}
-				// 		anncmnts={anncmnts}
-				// 		curUser={curUser}
-				// 	/>
-				// )}
-				position='LEFT'
-			/>
-			{/* <CurvedBottomBarExpo.Screen
-				name='Maintenance'
 				component={() => (
-					<MaintenanceScreen
+					<ScheduleScreen
 						setExpanded={setExpanded}
 						curUser={curUser}
-						mrequest={mrequest}
+					/>
+				)}
+				position='LEFT'
+			/>
+			<CurvedBottomBarExpo.Screen
+				name='Finder'
+				component={() => (
+					<FinderScreen
+						setExpanded={setExpanded}
+						curUser={curUser}
 					/>
 				)}
 			/>
 			<CurvedBottomBarExpo.Screen
-				name='Visitors'
+				name='Designer'
 				component={() => (
-					<VisitorsScreen
+					<DesignerScreen
 						setExpanded={setExpanded}
 						curUser={curUser}
-						visitors={visitors}
+						navigation={navigation}
+					/>
+				)}
+			/>
+			{/* <CurvedBottomBarExpo.Screen
+				name='Interactive'
+				component={() => (
+					<InteractiveScreen
+						setExpanded={setExpanded}
+						curUser={curUser}
 					/>
 				)}
 			/> */}
 
 			<CurvedBottomBarExpo.Screen
 				name='Prospective'
-				// component={() => (
-				// 	<PaymentScreen
-				// 		setExpanded={setExpanded}
-				// 		curUser={curUser}
-				// 	/>
-				// )}
+				component={() => (
+					<BuyersScreen
+						setExpanded={setExpanded}
+						curUser={curUser}
+					/>
+				)}
 				position='RIGHT'
 			/>
 
 			<CurvedBottomBarExpo.Screen
 				name='Profile'
-				// component={() => (
-				// 	<ProfileScreen
-				// 		setExpanded={setExpanded}
-				// 		navigation={navigation}
-				// 		curUser={curUser}
-				// 	/>
-				// )}
+				component={() => (
+					<AgentProfileScreen
+						setExpanded={setExpanded}
+						curUser={curUser}
+						navigation={navigation}
+					/>
+				)}
 				position='RIGHT'
 			/>
 		</CurvedBottomBarExpo.Navigator>

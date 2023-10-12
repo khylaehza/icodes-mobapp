@@ -15,7 +15,7 @@ import UserType from './src/screens/UserType';
 import Navigator from './Navigator';
 import 'react-native-reanimated';
 import 'react-native-gesture-handler';
-
+// import InteractiveScreen from './src/screens/InteractiveScreen';
 export default function App() {
 	let [fontsLoaded, fontError] = useFonts({
 		Sora_500Medium,
@@ -33,6 +33,7 @@ export default function App() {
 			<GluestackUIProvider config={config}>
 				<SafeAreaProvider style={[styles.container]}>
 					<Navigator />
+					{/* <InteractiveScreen /> */}
 					<StatusBar style='auto' />
 				</SafeAreaProvider>
 			</GluestackUIProvider>

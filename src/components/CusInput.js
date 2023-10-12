@@ -34,13 +34,14 @@ const CusInput = ({
 							justifyContent='space-between'
 							alignItems='center'
 						>
-							<FormControlLabel>{icon}</FormControlLabel>
+							{icon}
+							<FormControlLabel ml={-2} />
 
 							<Input
 								variant='underlined'
 								size='md'
 								w={w}
-								ml={10}
+								ml={required ? 10 : 5}
 								isReadOnly={readOnly}
 							>
 								<InputField

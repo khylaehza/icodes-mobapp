@@ -22,6 +22,7 @@ const CusDatePicker = ({
 	icon,
 	mode,
 	placeholder = 'Please select date',
+	w = 245,
 }) => {
 	const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
@@ -49,7 +50,7 @@ const CusDatePicker = ({
 
 					<Button
 						onPress={showDatePicker}
-						w={245}
+						w={w}
 						variant='outline'
 						borderColor='#a9a9ac'
 					>
