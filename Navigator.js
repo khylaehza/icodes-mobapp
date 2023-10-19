@@ -28,7 +28,7 @@ import AgentProfileScreen from './src/screens/AgentProfileScreen';
 import AgentServicesTab from './src/layouts/AgentServicesTab';
 import FinderScreen from './src/layouts/FinderScreen';
 import DesignerScreen from './src/layouts/DesignerScreen';
-// import InteractiveScreen from './src/screens/InteractiveScreen';
+import InteractiveScreen from './src/screens/InteractiveScreen';
 
 import DataProvider from './DataContext';
 import { useData } from './DataContext';
@@ -256,7 +256,7 @@ function Home({ navigation }) {
 
 function AgentHome({ navigation }) {
 	const [expanded, setExpanded] = useState(false);
-	const { curUser } = useData();
+	const { curUser, manningSched, pBuyers } = useData();
 	const _renderIcon = (routeName, selectedTab) => {
 		let icon = '';
 		let name = '';
@@ -354,6 +354,7 @@ function AgentHome({ navigation }) {
 					<ScheduleScreen
 						setExpanded={setExpanded}
 						curUser={curUser}
+						manningSched={manningSched}
 					/>
 				)}
 				position='LEFT'
@@ -377,7 +378,7 @@ function AgentHome({ navigation }) {
 					/>
 				)}
 			/>
-			{/* <CurvedBottomBarExpo.Screen
+			<CurvedBottomBarExpo.Screen
 				name='Interactive'
 				component={() => (
 					<InteractiveScreen
@@ -385,7 +386,7 @@ function AgentHome({ navigation }) {
 						curUser={curUser}
 					/>
 				)}
-			/> */}
+			/>
 
 			<CurvedBottomBarExpo.Screen
 				name='Prospective'
@@ -393,6 +394,7 @@ function AgentHome({ navigation }) {
 					<BuyersScreen
 						setExpanded={setExpanded}
 						curUser={curUser}
+						pBuyers={pBuyers}
 					/>
 				)}
 				position='RIGHT'

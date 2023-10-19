@@ -10,6 +10,7 @@ import {
 	FormControl,
 	HStack,
 } from '@gluestack-ui/themed';
+
 import { useState } from 'react';
 import CusText from './CusText';
 import { Controller } from 'react-hook-form';
@@ -25,6 +26,7 @@ const CusCheckbox = ({
 	icon,
 	readOnly = false,
 	w = 250,
+	others,
 }) => {
 	return (
 		<Controller
@@ -64,7 +66,7 @@ const CusCheckbox = ({
 											{check == 'Others: ' && (
 												<VStack mt={2}>
 													<CusInput
-														name={`otherCitizenship`}
+														name={others}
 														control={control}
 														placeholder={
 															'Please specify'

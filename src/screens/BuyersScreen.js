@@ -33,23 +33,11 @@ import CusModalView from '../components/CusModalView';
 import CusCheckbox from '../components/CusCheckbox';
 import CusRadioGroup from '../components/CusRadioGroup';
 import CusDatePicker from '../components/CusDatePicker';
-
-const BuyersScreen = () => {
+import moment from 'moment';
+const BuyersScreen = ({ curUser, pBuyers }) => {
 	const insets = useSafeAreaInsets();
-	const {
-		control,
-		handleSubmit,
-		formState: { errors },
-		watch,
-		reset,
-		// getValues,
-		clearErrors,
-	} = useForm({
-		values: {
-			request: type,
-		},
-	});
 
+	console.log(pBuyers);
 	const id = IdGenerator();
 	const [type, setType] = useState('');
 	const [showModal, setShowModal] = useState(false);
@@ -100,6 +88,25 @@ const BuyersScreen = () => {
 		{ name: 'Pull-ins', icon: require('../../assets/imgs/done.png') },
 	];
 
+	const {
+		control,
+		handleSubmit,
+		formState: { errors },
+		watch,
+		reset,
+		// getValues,
+		clearErrors,
+	} = useForm({
+		values: {
+			request: type,
+			mName: '',
+			telNum: '',
+			company: '',
+			compAddress: '',
+			compPostal: '',
+		},
+	});
+
 	const ModalBody = () => {
 		return (
 			<Box maxHeight={500}>
@@ -130,6 +137,7 @@ const BuyersScreen = () => {
 								/>
 							}
 							required={true}
+							rules={{ required: 'Last name is required.' }}
 						/>
 						<CusInput
 							name={`fName`}
@@ -141,6 +149,7 @@ const BuyersScreen = () => {
 								/>
 							}
 							required={true}
+							rules={{ required: 'First name is required.' }}
 						/>
 						<CusInput
 							name={`mName`}
@@ -165,6 +174,7 @@ const BuyersScreen = () => {
 									type={'SECONDARY'}
 								/>
 							}
+							rules={{ required: 'Gender is required.' }}
 						/>
 
 						<CusDatePicker
@@ -178,6 +188,7 @@ const BuyersScreen = () => {
 							}
 							mode={'date'}
 							w={185}
+							rules={{ required: 'Birthdate is required.' }}
 						/>
 						<CusCheckbox
 							checkLabels={citizenship}
@@ -190,6 +201,8 @@ const BuyersScreen = () => {
 								/>
 							}
 							required={true}
+							others={'otherCitizen'}
+							rules={{ required: 'Citizenship is required.' }}
 						/>
 						<CusCheckbox
 							checkLabels={civilStat}
@@ -202,6 +215,7 @@ const BuyersScreen = () => {
 								/>
 							}
 							required={true}
+							rules={{ required: 'Civil Status is required.' }}
 						/>
 						<CusTextArea
 							control={control}
@@ -231,7 +245,10 @@ const BuyersScreen = () => {
 							}
 							required={true}
 							type={'number'}
+							keyboardType={'number-pad'}
 							maxLength={4}
+							placeholder={'xxxx'}
+							rules={{ required: 'Postal code is required.' }}
 						/>
 						<CusInput
 							name={`cNum`}
@@ -248,6 +265,7 @@ const BuyersScreen = () => {
 							w={175}
 							required={true}
 							type={'number'}
+							rules={{ required: 'Contact number is required.' }}
 						/>
 						<CusInput
 							name={`telNum`}
@@ -277,6 +295,7 @@ const BuyersScreen = () => {
 							placeholder={'name@example.com'}
 							w={175}
 							required={true}
+							rules={{ required: 'Email is required.' }}
 						/>
 						<CusInput
 							name={`company`}
@@ -328,6 +347,8 @@ const BuyersScreen = () => {
 								/>
 							}
 							required={true}
+							others={'otherPref'}
+							rules={{ required: 'Preference is required.' }}
 						/>
 						<CusCheckbox
 							checkLabels={purpose}
@@ -340,6 +361,7 @@ const BuyersScreen = () => {
 								/>
 							}
 							required={true}
+							rules={{ required: 'Purpose is required.' }}
 						/>
 						<CusCheckbox
 							checkLabels={productKnow}
@@ -352,6 +374,8 @@ const BuyersScreen = () => {
 								/>
 							}
 							required={true}
+							others={'otherKnow'}
+							rules={{ required: 'This is is required.' }}
 						/>
 					</VStack>
 				</ScrollView>
@@ -359,7 +383,244 @@ const BuyersScreen = () => {
 		);
 	};
 
-	const onAdd = async (data, e) => {};
+	const onAdd = async (data, e) => {
+		reset();
+		setShowModal(false);
+		clearErrors();
+		setSelectedDate('');
+		console.log(data);
+		try {
+			await addDoc(
+				collection(
+					db,
+					'maintenance',
+					'salesmanagement',
+					'tbl_agentBuyers'
+				),
+				{
+					ABuyersID: id,
+					PBType: data.request,
+					Agent: `${curUser.fName} ${curUser.lName}`,
+					PBBy: curUser.empId,
+					LName: data.lName,
+					FName: data.fName,
+					MName: data.mName,
+					Gender: data.gender,
+					BDate: moment(selectedDate).format('MM/DD/YYYY'),
+					Civil: data.civil,
+					Citizen: data.citizenship,
+					Address: data.address,
+					Postal: data.postal,
+					CNum: data.cNum,
+					TNum: data.telNum,
+					Email: data.email,
+					CompName: data.company,
+					CompAdd: data.compAddress,
+					CompPostal: data.compPostal,
+					Preference: data.preference,
+					Purpose: data.purpose,
+					Know: data.productKnow,
+				}
+			);
+
+			Toast.show('Successful', {
+				duration: Toast.durations.SHORT,
+			});
+		} catch (e) {
+			Toast.show('Failed', {
+				duration: Toast.durations.SHORT,
+			});
+			console.log(e);
+		}
+	};
+
+	const ModalView = ({ data }) => {
+		return (
+			<>
+				<CusInput
+					placeholder={data.PBType}
+					name={`request`}
+					control={control}
+					icon={
+						<Ionicons
+							name='md-pricetag'
+							size={18}
+							color='#0A2542'
+						/>
+					}
+					readOnly={true}
+				/>
+				<CusInput
+					placeholder={data.LName}
+					name={`lName`}
+					control={control}
+					icon={
+						<CusText
+							text={'Last Name:'}
+							type={'SECONDARY'}
+						/>
+					}
+					readOnly={true}
+				/>
+				<CusInput
+					name={`fName`}
+					control={control}
+					icon={
+						<CusText
+							text={'First Name:'}
+							type={'SECONDARY'}
+						/>
+					}
+					readOnly={true}
+					placeholder={data.FName}
+				/>
+				<CusInput
+					name={`mName`}
+					control={control}
+					icon={
+						<CusText
+							text={'Middle Name:'}
+							type={'SECONDARY'}
+						/>
+					}
+					readOnly={true}
+					placeholder={data.MName}
+				/>
+				<CusInput
+					name={`gender`}
+					control={control}
+					icon={
+						<CusText
+							text={'Gender:'}
+							type={'SECONDARY'}
+						/>
+					}
+					readOnly={true}
+					placeholder={data.Gender}
+				/>
+				<CusInput
+					name={`bday`}
+					control={control}
+					icon={
+						<CusText
+							text={'Birthdate:'}
+							type={'SECONDARY'}
+						/>
+					}
+					readOnly={true}
+					placeholder={data.BDate}
+				/>
+				<CusInput
+					name={`citi`}
+					control={control}
+					icon={
+						<CusText
+							text={'Citizenship:'}
+							type={'SECONDARY'}
+						/>
+					}
+					readOnly={true}
+					placeholder={data.Citizen}
+				/>
+				<CusInput
+					name={`civil`}
+					control={control}
+					icon={
+						<CusText
+							text={'Civil Status:'}
+							type={'SECONDARY'}
+						/>
+					}
+					readOnly={true}
+					placeholder={data.Civil}
+				/>
+				<CusTextArea
+					placeholder={data.Address}
+					control={control}
+					icon={
+						<CusText
+							text={'Address:'}
+							type={'SECONDARY'}
+						/>
+					}
+					name={`address`}
+					disabled={true}
+				/>
+				<CusInput
+					name={`postal`}
+					control={control}
+					icon={
+						<CusText
+							text={'Postal Code:'}
+							type={'SECONDARY'}
+						/>
+					}
+					readOnly={true}
+					placeholder={data.Postal}
+				/>
+				<CusInput
+					name={`Contact`}
+					control={control}
+					icon={
+						<CusText
+							text={'Contact No.'}
+							type={'SECONDARY'}
+						/>
+					}
+					readOnly={true}
+					placeholder={data.CNum}
+				/>
+				<CusInput
+					name={`Tel`}
+					control={control}
+					icon={
+						<CusText
+							text={'Telephone No. '}
+							type={'SECONDARY'}
+						/>
+					}
+					readOnly={true}
+					placeholder={data.Tel}
+				/>
+				<CusInput
+					name={`Email`}
+					control={control}
+					icon={
+						<CusText
+							text={'Email'}
+							type={'SECONDARY'}
+						/>
+					}
+					readOnly={true}
+					placeholder={data.Email}
+				/>
+				<CusInput
+					name={`Company`}
+					control={control}
+					icon={
+						<CusText
+							text={'Company Name: '}
+							type={'SECONDARY'}
+						/>
+					}
+					readOnly={true}
+					placeholder={data.CompName}
+				/>
+				<CusInput
+					name={`CompAdd`}
+					control={control}
+					icon={
+						<CusText
+							text={'Company Address: '}
+							type={'SECONDARY'}
+						/>
+					}
+					readOnly={true}
+					placeholder={data.CompAdd}
+				/>
+			</>
+		);
+	};
 	return (
 		<View
 			style={{
@@ -443,6 +704,14 @@ const BuyersScreen = () => {
 			<ScrollView showsVerticalScrollIndicator={false}>
 				<Box mb={50}>
 					{servHistory.map((stat, skey) => {
+						var hasMatch =
+							pBuyers.filter((element) => {
+								return (
+									element.PBType == stat.name &&
+									curUser.empId === element.PBBy
+								);
+							}).length > 0;
+
 						return (
 							<Box
 								padding={20}
@@ -460,47 +729,66 @@ const BuyersScreen = () => {
 								/>
 
 								<Divider my='$1.5' />
-								<HStack
-									pr={5}
-									pl={5}
-									justifyContent='space-between'
-									alignItems='center'
-									// key={mkey}
-									mb={-3}
-								>
+								{pBuyers
+									.filter((element) => {
+										return (
+											element.PBType == stat.name &&
+											curUser.empId === element.PBBy
+										);
+									})
+									.map((data, bkey) => (
+										<HStack
+											pr={5}
+											pl={5}
+											justifyContent='space-between'
+											alignItems='center'
+											key={bkey}
+											mb={-3}
+										>
+											<CusText
+												type={'SECONDARY'}
+												text={`${stat.name} #${data.ABuyersID}`}
+												style={{
+													textAlign: 'left',
+												}}
+											/>
+											<CusModalView
+												header={`${stat.name} #${data.ABuyersID}`}
+												body={<ModalView data={data} />}
+												showModal={showDet}
+												setShowModal={setShowDet}
+												button={
+													<Button
+														variant='link'
+														size='xs'
+														onPress={() => {
+															setShowDet(true);
+														}}
+													>
+														<CusText
+															type={'PRIMARY'}
+															text={'View Info >'}
+															style={{
+																textAlign:
+																	'left',
+																fontSize: 12,
+															}}
+															color='#0A2542'
+														/>
+													</Button>
+												}
+											/>
+										</HStack>
+									))}
+								{!hasMatch && (
 									<CusText
 										type={'SECONDARY'}
-										text={`${stat.name} #`}
+										text={`No data available.`}
 										style={{
-											textAlign: 'left',
+											textAlign: 'center',
 										}}
 									/>
-									<CusModalView
-										header={`Ticket #`}
-										body={''}
-										showModal={showDet}
-										setShowModal={setShowDet}
-										button={
-											<Button
-												variant='link'
-												size='xs'
-												onPress={() => {
-													setShowDet(true);
-												}}
-											>
-												<CusText
-													type={'PRIMARY'}
-													text={'View Info >'}
-													style={{
-														textAlign: 'left',
-														fontSize: 12,
-													}}
-													color='#0A2542'
-												/>
-											</Button>
-										}
-									/>
-								</HStack>
+								)}
 							</Box>
 						);
 					})}

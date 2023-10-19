@@ -231,7 +231,51 @@ const DataProvider = ({ children }) => {
 		return () => unsubscribe();
 	}, []);
 
-	console.log(curUser);
+	const [manningSched, setManningSched] = useState([{}]);
+	useEffect(() => {
+		const q = query(
+			collection(
+				db,
+				'maintenance',
+				'salesmanagement',
+				'tbl_manningSchedule'
+			)
+		);
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const schedule = [];
+			querySnapshot.forEach(
+				(doc) => {
+					schedule.push({ ...doc.data(), id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+			setManningSched(schedule);
+		});
+		return () => unsubscribe();
+	}, []);
+
+	const [pBuyers, setPBuyers] = useState([{}]);
+	useEffect(() => {
+		const q = query(
+			collection(db, 'maintenance', 'salesmanagement', 'tbl_agentBuyers')
+		);
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const buyers = [];
+			querySnapshot.forEach(
+				(doc) => {
+					buyers.push({ ...doc.data(), id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+			setPBuyers(buyers);
+		});
+		return () => unsubscribe();
+	}, []);
+
 	const value = {
 		Login,
 		AgentLogin,
@@ -245,6 +289,8 @@ const DataProvider = ({ children }) => {
 		bookings,
 		amenities,
 		reports,
+		manningSched,
+		pBuyers,
 	};
 
 	return (

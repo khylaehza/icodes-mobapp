@@ -100,7 +100,7 @@ const AgentProfileScreen = ({ curUser, navigation }) => {
 					/>
 					<CusText
 						type={'PRIMARY'}
-						text={`Team Alpha`}
+						text={`Team ${curUser.team}`}
 						style={{ marginTop: -8 }}
 					/>
 				</VStack>

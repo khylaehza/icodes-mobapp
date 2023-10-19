@@ -78,7 +78,7 @@ const DesignerScreen = ({ navigation }) => {
 								/>
 
 								<Image
-									source={require('../../assets/imgs/Conference.jpg')}
+									source={require('../../assets/imgs/studio_floor.png')}
 									height={150}
 									rounded={5}
 									objectFit='cover'
@@ -90,9 +90,9 @@ const DesignerScreen = ({ navigation }) => {
 									size='sm'
 									w={'100%'}
 									bgColor='$blue300'
-									// onPress={() => {
-									// 	navigation.navigate('Interactive');
-									// }}
+									onPress={() => {
+										navigation.navigate('Interactive');
+									}}
 								>
 									<CusText
 										type={'PRIMARY'}

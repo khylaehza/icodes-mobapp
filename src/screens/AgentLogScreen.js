@@ -22,9 +22,6 @@ const AgentLogScreen = ({ navigation }) => {
 		let username = data['uname'];
 		let userpass = data['pass'];
 
-		// let username = 'Owner_111111';
-		// let userpass = '1234';
-
 		AgentLogin(username, userpass, navigation);
 		reset();
 	};

@@ -12,7 +12,7 @@ import CusText from '../components/CusText';
 
 const AgentHomeScreen = ({ curUser }) => {
 	const insets = useSafeAreaInsets();
-	console.log(curUser);
+
 	return (
 		<View
 			style={{
