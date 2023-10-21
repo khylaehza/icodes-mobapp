@@ -388,7 +388,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 		setShowModal(false);
 		clearErrors();
 		setSelectedDate('');
-		console.log(data);
+
 		try {
 			await addDoc(
 				collection(
@@ -420,6 +420,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 					Preference: data.preference,
 					Purpose: data.purpose,
 					Know: data.productKnow,
+					CreatedDate: serverTimestamp(),
 				}
 			);
 
