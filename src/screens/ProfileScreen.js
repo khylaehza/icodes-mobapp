@@ -122,7 +122,7 @@ const ProfileScreen = ({ navigation, curUser }) => {
 				>
 					<Avatar size='2xl'>
 						<AvatarImage
-							source={{ uri: curUser.unOwnerImg }}
+							source={{ uri: curUser.UnOwnerImg }}
 							resizeMode='contain'
 							size='500px'
 						/>
@@ -130,13 +130,13 @@ const ProfileScreen = ({ navigation, curUser }) => {
 
 					<CusText
 						type={'HEADING'}
-						text={`${curUser.fName}${curUser.mName} ${curUser.lName}`}
+						text={`${curUser.FName}${curUser.MName} ${curUser.LName}`}
 						style={{ fontSize: 24 }}
 					/>
 
 					<CusText
 						type={'PRIMARY'}
-						text={`Owner_${curUser.uid}`}
+						text={`Owner_${curUser.UID}`}
 						style={{ marginTop: -8 }}
 					/>
 				</VStack>

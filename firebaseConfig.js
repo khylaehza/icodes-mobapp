@@ -5,13 +5,22 @@ import { getFirestore } from 'firebase/firestore';
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
+// const firebaseConfig = {
+// 	apiKey: 'AIzaSyA2WYfFqJR8_mPr73onUSxCHe7zIyIJ_10',
+// 	authDomain: 'icodes-ctc-db.firebaseapp.com',
+// 	projectId: 'icodes-ctc-db',
+// 	storageBucket: 'icodes-ctc-db.appspot.com',
+// 	messagingSenderId: '1051781258891',
+// 	appId: '1:1051781258891:web:2dad91823aa7886091fe8e',
+// };
+
 const firebaseConfig = {
-	apiKey: 'AIzaSyAQOk3qcOzuEHCcjJzIr7e67v2dN7QgFw8',
-	authDomain: 'db-icodes-thesis.firebaseapp.com',
-	projectId: 'db-icodes-thesis',
-	storageBucket: 'db-icodes-thesis.appspot.com',
-	messagingSenderId: '909723058588',
-	appId: '1:909723058588:web:327efef65a96d54d6f0859',
+	apiKey: 'AIzaSyA68zDtDVQ8N-ru5QEkdAgWaHCuY017wbc',
+	authDomain: 'icodes-ctc-db1.firebaseapp.com',
+	projectId: 'icodes-ctc-db1',
+	storageBucket: 'icodes-ctc-db1.appspot.com',
+	messagingSenderId: '663159201855',
+	appId: '1:663159201855:web:d2b4b2a8b2ef19c004988a',
 };
 
 // Initialize Firebase

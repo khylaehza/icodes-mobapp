@@ -15,19 +15,19 @@ import DateChecker from '../utilities/DateChecker';
 const OwnerInfo = ({ curUser }) => {
 	const insets = useSafeAreaInsets();
 
-	const date = curUser.createdDate ? curUser.createdDate.seconds * 1000 : '';
+	const date = curUser.CreatedDate ? curUser.CreatedDate.seconds * 1000 : '';
 
 	const info = [
-		{ name: 'Last Name', data: curUser.lName },
-		{ name: 'Middle Name', data: curUser.mName },
-		{ name: 'Given Name', data: curUser.fName },
-		{ name: 'Unit Owner No.', data: curUser.uid },
+		{ name: 'Last Name', data: curUser.LName },
+		{ name: 'Middle Name', data: curUser.MName },
+		{ name: 'Given Name', data: curUser.FName },
+		{ name: 'Unit Owner No.', data: curUser.UID },
 		{
 			name: 'Unit Owner Since',
 			data: <DateChecker dateToCheck={new Date(date)} />,
 		},
-		{ name: 'Email', data: curUser.email },
-		{ name: 'Contact Number', data: curUser.cNum },
+		{ name: 'Email', data: curUser.Email },
+		{ name: 'Contact Number', data: curUser.CNum },
 	];
 	return (
 		<View
@@ -52,7 +52,7 @@ const OwnerInfo = ({ curUser }) => {
 				>
 					<Avatar size='2xl'>
 						<AvatarImage
-							source={{ uri: curUser.unOwnerImg }}
+							source={{ uri: curUser.UnOwnerImg }}
 							resizeMode='contain'
 							size='500px'
 						/>
@@ -60,13 +60,13 @@ const OwnerInfo = ({ curUser }) => {
 
 					<CusText
 						type={'HEADING'}
-						text={`${curUser.fName}${curUser.mName} ${curUser.lName}`}
+						text={`${curUser.FName}${curUser.MName} ${curUser.LName}`}
 						style={{ fontSize: 24 }}
 					/>
 
 					<CusText
 						type={'PRIMARY'}
-						text={`Owner_${curUser.uid}`}
+						text={`Owner_${curUser.UID}`}
 						style={{ marginTop: -8 }}
 					/>
 				</VStack>

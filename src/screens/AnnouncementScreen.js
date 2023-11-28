@@ -23,7 +23,7 @@ const AnnouncementScreen = ({ setExpanded, anncmnts, curUser }) => {
 		anncmnts.filter((element) => {
 			return (
 				element.Purpose == type &&
-				curUser.tower == element.For.slice(-3, -1)
+				element.For.slice(-4, -2) == curUser.Tower
 			);
 		}).length > 0;
 
@@ -112,8 +112,8 @@ const AnnouncementScreen = ({ setExpanded, anncmnts, curUser }) => {
 						.filter((element) => {
 							return (
 								element.Purpose == type &&
-								curUser.tower == element.For.slice(-3, -1) &&
-								element.Status == 'Active'
+								curUser.Tower == element.For.slice(-4, -2) &&
+								element.Status
 							);
 						})
 						.map((data, key) => {

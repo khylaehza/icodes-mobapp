@@ -28,9 +28,11 @@ import CusModalView from '../components/CusModalView';
 const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 	const insets = useSafeAreaInsets();
 
+	console.log(amenities);
+
 	const status = [
-		{ name: 'Active', icon: require('../../assets/imgs/wip.png') },
-		{ name: 'Pending', icon: require('../../assets/imgs/pending.png') },
+		{ name: 'Pending', icon: require('../../assets/imgs/wip.png') },
+		{ name: 'Confirmed', icon: require('../../assets/imgs/pending.png') },
 		{ name: 'Completed', icon: require('../../assets/imgs/done.png') },
 	];
 
@@ -64,19 +66,17 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 		setSelectedDate('');
 		clearErrors();
 		try {
-			addDoc(
-				collection(db, 'maintenance', 'frontdesk', 'tbl_BAmenities'),
-				{
-					RequestedBy: curUser.uid,
-					Name: `${curUser.fName} ${curUser.lName}`,
-					BookingID: id,
-					AmenityType: data.request,
-					Date: moment(selectedDate).format('MM/DD/YYYY'),
-					NumPerson: data.number,
-					Status: 'Pending',
-					CreatedDate: serverTimestamp(),
-				}
-			);
+			addDoc(collection(db, 'maintenance', 'frontdesk', 'tbl_bookings'), {
+				RequestedBy: curUser.UID,
+				UnitOwner: `${curUser.FName} ${curUser.LName}`,
+				BookingID: id,
+				AmenityType: data.request,
+				Date: moment(selectedDate).format('MM/DD/YYYY'),
+				NumPerson: data.number,
+				Status: 'Pending',
+				CreatedDate: serverTimestamp(),
+				Tower: curUser.Tower,
+			});
 			Toast.show('Successful', {
 				duration: Toast.durations.SHORT,
 			});
@@ -256,9 +256,8 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 						>
 							{amenities
 								.filter((element) => {
-								
 									return (
-										curUser.tower ==
+										curUser.Tower ==
 										element.TNum.slice(-3, -1)
 									);
 								})
@@ -350,9 +349,10 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 					{status.map((stat, key) => {
 						var hasMatch =
 							bookings.filter((element) => {
+								console.log(element);
 								return (
 									element.Status == stat.name &&
-									curUser.uid === element.RequestedBy
+									curUser.UID === element.RequestedBy
 								);
 							}).length > 0;
 
@@ -385,10 +385,23 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 								<Divider my='$1.5' />
 								{bookings
 									.filter((element) => {
+										console.log(
+											curUser.FName + ' ' + curUser.LName,
+											element.UnitOwner,
+											element.Status,
+											stat.name
+										);
 										return (
 											element.Status == stat.name &&
-											curUser.uid === element.RequestedBy
+											curUser.FName +
+												' ' +
+												curUser.LName ===
+												element.UnitOwner
 										);
+										// return (
+										// 	element.Status == stat.name &&
+										// 	curUser.UID === element.RequestedBy
+										// );
 									})
 									.map((data, akey) => (
 										<HStack

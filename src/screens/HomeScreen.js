@@ -47,7 +47,7 @@ const HomeScreen = () => {
 					/>
 				</Center>
 				<CusText
-					text={`Hi, ${curUser.fName}!`}
+					text={`Hi, ${curUser.FName}!`}
 					type={'HEADING'}
 				/>
 

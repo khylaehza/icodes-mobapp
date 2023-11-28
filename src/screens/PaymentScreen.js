@@ -34,7 +34,7 @@ const PaymentScreen = ({ curUser }) => {
 		// getValues,
 	} = useForm({
 		values: {
-			request: curUser.units[0],
+			request: curUser.Units,
 		},
 	});
 
@@ -119,8 +119,10 @@ const PaymentScreen = ({ curUser }) => {
 					<CusSelect
 						name={`location`}
 						control={control}
-						item={[...curUser.units]}
-						placeholder={curUser.units[0]}
+						item={[...curUser.Units]}
+						// item={[...curUser.units]}
+						placeholder={curUser.Units}
+						// placeholder={curUser.units[0]}
 						required={false}
 						variant={'default'}
 						textAlign='center'

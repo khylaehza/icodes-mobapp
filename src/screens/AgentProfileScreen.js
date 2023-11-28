@@ -71,7 +71,7 @@ const AgentProfileScreen = ({ curUser, navigation }) => {
 				>
 					<Avatar size='2xl'>
 						<AvatarImage
-							source={{ uri: curUser.image }}
+							source={{ uri: curUser.Image }}
 							resizeMode='contain'
 							size='500px'
 						/>
@@ -79,28 +79,28 @@ const AgentProfileScreen = ({ curUser, navigation }) => {
 
 					<CusText
 						type={'HEADING'}
-						text={`${curUser.fName} ${curUser.mName} ${curUser.lName}`}
+						text={`${curUser.FName} ${curUser.MName} ${curUser.LName}`}
 						style={{ fontSize: 24 }}
 					/>
 
 					<CusText
 						type={'PRIMARY'}
-						text={curUser.uName}
+						text={curUser.UName}
 						style={{ marginTop: -8 }}
 					/>
 					<CusText
 						type={'PRIMARY'}
-						text={`${curUser.email}.com`}
+						text={`${curUser.Email}.com`}
 						style={{ marginTop: -8 }}
 					/>
 					<CusText
 						type={'PRIMARY'}
-						text={`Agent Since ${curUser.dStart}`}
+						text={`Agent Since ${curUser.DStart}`}
 						style={{ marginTop: -8 }}
 					/>
 					<CusText
 						type={'PRIMARY'}
-						text={`Team ${curUser.team}`}
+						text={`Team ${curUser.Team}`}
 						style={{ marginTop: -8 }}
 					/>
 				</VStack>

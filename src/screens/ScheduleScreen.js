@@ -24,7 +24,7 @@ const ScheduleScreen = ({ manningSched, curUser }) => {
 	const historySched = {};
 
 	manningSched
-		.filter((data) => data.Team == curUser.team)
+		.filter((data) => data.Team == curUser.Team)
 		.map((data) => {
 			const date = new Date(data.SchedDate);
 

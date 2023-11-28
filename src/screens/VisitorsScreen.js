@@ -28,8 +28,8 @@ import CusModalView from '../components/CusModalView';
 const VisitorsScreen = ({ curUser, visitors }) => {
 	const insets = useSafeAreaInsets();
 	const status = [
-		{ name: 'Active', icon: require('../../assets/imgs/wip.png') },
-		{ name: 'Pending', icon: require('../../assets/imgs/pending.png') },
+		{ name: 'Pending', icon: require('../../assets/imgs/wip.png') },
+		{ name: 'Confirmed', icon: require('../../assets/imgs/pending.png') },
 		{ name: 'Completed', icon: require('../../assets/imgs/done.png') },
 	];
 	const [showModal, setShowModal] = useState(false);
@@ -73,12 +73,12 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 
 		try {
 			await addDoc(
-				collection(db, 'maintenance', 'frontdesk', 'tbl_visitor'),
+				collection(db, 'maintenance', 'frontdesk', 'tbl_visitors'),
 				{
 					VisitorID: id,
 					Unit: data.location,
-					RequestedBy: curUser.uid,
-					For: `${curUser.fName} ${curUser.lName}`,
+					RequestedBy: curUser.UID,
+					For: `${curUser.FName} ${curUser.LName}`,
 					Visitor: visitors,
 					DateStart: moment(selectedDate).format('MM/DD/YYYY'),
 					Purpose: data.purpose,
@@ -99,6 +99,7 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 	};
 
 	const Body = () => {
+		let units = [curUser.Units];
 		return (
 			<>
 				<VStack gap={10}>
@@ -188,7 +189,7 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 							/>
 						}
 						control={control}
-						item={[...curUser.units]}
+						item={[...units]}
 						rules={{ required: 'Location is required.' }}
 						placeholder={'Location'}
 						required={true}
@@ -390,7 +391,8 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 							visitors.filter((element) => {
 								return (
 									element.Status == stat.name &&
-									curUser.uid === element.RequestedBy
+									curUser.FName + '  ' + curUser.LName ===
+										element.For.toString()
 								);
 							}).length > 0;
 
@@ -426,7 +428,10 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 									.filter((element) => {
 										return (
 											element.Status == stat.name &&
-											curUser.uid === element.RequestedBy
+											curUser.FName +
+												'  ' +
+												curUser.LName ===
+												element.For.toString()
 										);
 									})
 									.map((data, vkey) => (

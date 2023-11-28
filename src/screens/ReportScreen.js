@@ -28,7 +28,6 @@ const ReportScreen = ({ curUser, reports }) => {
 	const ref = useRef(null);
 	const id = IdGenerator();
 	const insets = useSafeAreaInsets();
-
 	const {
 		control,
 		handleSubmit,
@@ -68,10 +67,11 @@ const ReportScreen = ({ curUser, reports }) => {
 				collection(db, 'maintenance', 'admin', 'tbl_reports'),
 				{
 					ReportID: id,
-					RequestedBy: curUser.uid,
-					For: `${curUser.fName} ${curUser.lName}`,
+					UserID: curUser.UID,
+					Name: `${curUser.FName} ${curUser.LName}`,
 					Report: data.report,
 					CreatedDate: serverTimestamp(),
+					Tower: curUser.Tower,
 				}
 			);
 

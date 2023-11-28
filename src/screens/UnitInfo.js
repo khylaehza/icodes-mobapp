@@ -108,87 +108,77 @@ const UnitInfo = ({ navigation, curUser, unitInfo }) => {
 
 					{unitInfo.map((data) => (
 						<>
-							{data.units.map((un) => {
-								if (curUser.units.includes(un)) {
+							{/* {data.Units.map((un) => { */}
+							{/* if (curUser.Units.includes(un)) {
 									const date = data.createdDate
 										? data.createdDate.seconds * 1000
-										: '';
-								
-									return (
-										<Box
-											padding={10}
-											rounded={15}
-											bgColor='$white300'
-											gap={2}
-											hardShadow={5}
-											shadowColor='$blue200'
-											w={'100%'}
-											mt={20}
-										>
-											<CusPager
-												item={Array(data.typeImage)}
-											/>
-											<Box
-												p={5}
-												alignItems='center'
-											>
-												<CusText
-													type={'TERTIARY'}
-													text={curUser.units.toString()}
-												/>
+										: ''; */}
+							{/* return ( */}
+							<Box
+								padding={10}
+								rounded={15}
+								bgColor='$white300'
+								gap={2}
+								hardShadow={5}
+								shadowColor='$blue200'
+								w={'100%'}
+								mt={20}
+							>
+								<CusPager item={Array(data.TypeImage)} />
+								<Box
+									p={5}
+									alignItems='center'
+								>
+									<CusText
+										type={'TERTIARY'}
+										// text={curUser.Units.toString()}
+										text={curUser.Units.toString()}
+									/>
 
-												<HStack>
-													<CusText
-														type={'SECONDARY'}
-														style={{
-															textAlign:
-																'justify',
-															fontSize: 12,
-														}}
-														text={
-															'Purchased Date: '
-														}
-													/>
-													<CusText
-														type={'SECONDARY'}
-														style={{
-															textAlign:
-																'justify',
-															fontSize: 12,
-														}}
-														text={
-															<DateChecker
-																dateToCheck={
-																	new Date(
-																		date
-																	)
-																}
-															/>
-														}
-													/>
-												</HStack>
+									<HStack>
+										<CusText
+											type={'SECONDARY'}
+											style={{
+												textAlign: 'justify',
+												fontSize: 12,
+											}}
+											text={'Purchased Date: '}
+										/>
+										<CusText
+											type={'SECONDARY'}
+											style={{
+												textAlign: 'justify',
+												fontSize: 12,
+											}}
+											text={
+												<DateChecker
+													dateToCheck={new Date(date)}
+												/>
+											}
+										/>
+									</HStack>
 
-												<CusText
-													type={'SECONDARY'}
-													style={{
-														textAlign: 'justify',
-														fontSize: 12,
-													}}
-													text={`Size: ${data.unitSize} sq. meters`}
-												/>
-												<CusText
-													type={'SECONDARY'}
-													style={{
-														textAlign: 'justify',
-														fontSize: 12,
-													}}
-													text={`Type: ${data.typeName}`}
-												/>
-											</Box>
-										</Box>
-									);
-								}
-							})}
+									<CusText
+										type={'SECONDARY'}
+										style={{
+											textAlign: 'justify',
+											fontSize: 12,
+										}}
+										text={`Size: ${data.UnitSize} sq. meters`}
+									/>
+									<CusText
+										type={'SECONDARY'}
+										style={{
+											textAlign: 'justify',
+											fontSize: 12,
+										}}
+										text={`Type: ${data.TypeName}`}
+									/>
+								</Box>
+							</Box>
+							{/* ); */}
+							{/* } */}
+							{/* })} */}
 						</>
 					))}
 				</ScrollView>

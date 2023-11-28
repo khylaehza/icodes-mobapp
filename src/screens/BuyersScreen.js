@@ -37,7 +37,6 @@ import moment from 'moment';
 const BuyersScreen = ({ curUser, pBuyers }) => {
 	const insets = useSafeAreaInsets();
 
-	console.log(pBuyers);
 	const id = IdGenerator();
 	const [type, setType] = useState('');
 	const [showModal, setShowModal] = useState(false);
@@ -163,7 +162,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 							required={false}
 						/>
 
-						<CusRadioGroup
+						{/* <CusRadioGroup
 							radioLabels={gender}
 							control={control}
 							name={`gender`}
@@ -249,7 +248,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 							maxLength={4}
 							placeholder={'xxxx'}
 							rules={{ required: 'Postal code is required.' }}
-						/>
+						/> */}
 						<CusInput
 							name={`cNum`}
 							control={control}
@@ -267,7 +266,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 							type={'number'}
 							rules={{ required: 'Contact number is required.' }}
 						/>
-						<CusInput
+						{/* <CusInput
 							name={`telNum`}
 							control={control}
 							icon={
@@ -281,7 +280,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 							maxLength={8}
 							w={175}
 							type={'number'}
-						/>
+						/> */}
 						<CusInput
 							name={`email`}
 							control={control}
@@ -297,7 +296,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 							required={true}
 							rules={{ required: 'Email is required.' }}
 						/>
-						<CusInput
+						{/* <CusInput
 							name={`company`}
 							control={control}
 							icon={
@@ -334,7 +333,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 							}
 							type={'number'}
 							maxLength={4}
-						/>
+						/> */}
 						<Divider />
 						<CusCheckbox
 							checkLabels={preference}
@@ -350,7 +349,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 							others={'otherPref'}
 							rules={{ required: 'Preference is required.' }}
 						/>
-						<CusCheckbox
+						{/* <CusCheckbox
 							checkLabels={purpose}
 							control={control}
 							name={'purpose'}
@@ -362,8 +361,8 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 							}
 							required={true}
 							rules={{ required: 'Purpose is required.' }}
-						/>
-						<CusCheckbox
+						/> */}
+						{/* <CusCheckbox
 							checkLabels={productKnow}
 							control={control}
 							name={'productKnow'}
@@ -376,7 +375,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 							required={true}
 							others={'otherKnow'}
 							rules={{ required: 'This is is required.' }}
-						/>
+						/> */}
 					</VStack>
 				</ScrollView>
 			</Box>
@@ -395,32 +394,33 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 					db,
 					'maintenance',
 					'salesmanagement',
-					'tbl_agentBuyers'
+					'tbl_prosBuyers'
 				),
 				{
-					ABuyersID: id,
+					BuyersID: id,
 					PBType: data.request,
-					Agent: `${curUser.fName} ${curUser.lName}`,
-					PBBy: curUser.empId,
+					Agent: `${curUser.FName} ${curUser.LName}`,
+					AgentID: curUser.EmpId,
 					LName: data.lName,
 					FName: data.fName,
 					MName: data.mName,
-					Gender: data.gender,
-					BDate: moment(selectedDate).format('MM/DD/YYYY'),
-					Civil: data.civil,
-					Citizen: data.citizenship,
-					Address: data.address,
-					Postal: data.postal,
+					// Gender: data.gender,
+					// BDate: moment(selectedDate).format('MM/DD/YYYY'),
+					// Civil: data.civil,
+					// Citizen: data.citizenship,
+					// Address: data.address,
+					// Postal: data.postal,
 					CNum: data.cNum,
-					TNum: data.telNum,
+					// TNum: data.telNum,
 					Email: data.email,
-					CompName: data.company,
-					CompAdd: data.compAddress,
-					CompPostal: data.compPostal,
+					// CompName: data.company,
+					// CompAdd: data.compAddress,
+					// CompPostal: data.compPostal,
 					Preference: data.preference,
-					Purpose: data.purpose,
-					Know: data.productKnow,
+					// Purpose: data.purpose,
+					// Know: data.productKnow,
 					CreatedDate: serverTimestamp(),
+					Type: 'From Agent',
 				}
 			);
 
@@ -487,7 +487,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 					readOnly={true}
 					placeholder={data.MName}
 				/>
-				<CusInput
+				{/* <CusInput
 					name={`gender`}
 					control={control}
 					icon={
@@ -534,8 +534,8 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 					}
 					readOnly={true}
 					placeholder={data.Civil}
-				/>
-				<CusTextArea
+				/> */}
+				{/* <CusTextArea
 					placeholder={data.Address}
 					control={control}
 					icon={
@@ -558,7 +558,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 					}
 					readOnly={true}
 					placeholder={data.Postal}
-				/>
+				/> */}
 				<CusInput
 					name={`Contact`}
 					control={control}
@@ -571,7 +571,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 					readOnly={true}
 					placeholder={data.CNum}
 				/>
-				<CusInput
+				{/* <CusInput
 					name={`Tel`}
 					control={control}
 					icon={
@@ -582,7 +582,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 					}
 					readOnly={true}
 					placeholder={data.Tel}
-				/>
+				/> */}
 				<CusInput
 					name={`Email`}
 					control={control}
@@ -595,7 +595,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 					readOnly={true}
 					placeholder={data.Email}
 				/>
-				<CusInput
+				{/* <CusInput
 					name={`Company`}
 					control={control}
 					icon={
@@ -618,7 +618,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 					}
 					readOnly={true}
 					placeholder={data.CompAdd}
-				/>
+				/> */}
 			</>
 		);
 	};
@@ -709,7 +709,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 							pBuyers.filter((element) => {
 								return (
 									element.PBType == stat.name &&
-									curUser.empId === element.PBBy
+									curUser.EmpId === element.AgentID
 								);
 							}).length > 0;
 
@@ -732,9 +732,10 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 								<Divider my='$1.5' />
 								{pBuyers
 									.filter((element) => {
+										console.log(element);
 										return (
 											element.PBType == stat.name &&
-											curUser.empId === element.PBBy
+											curUser.EmpId === element.AgentID
 										);
 									})
 									.map((data, bkey) => (
@@ -748,13 +749,13 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 										>
 											<CusText
 												type={'SECONDARY'}
-												text={`${stat.name} #${data.ABuyersID}`}
+												text={`${stat.name} #${data.BuyersID}`}
 												style={{
 													textAlign: 'left',
 												}}
 											/>
 											<CusModalView
-												header={`${stat.name} #${data.ABuyersID}`}
+												header={`${stat.name} #${data.BuyersID}`}
 												body={<ModalView data={data} />}
 												showModal={showDet}
 												setShowModal={setShowDet}

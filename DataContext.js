@@ -20,16 +20,22 @@ const DataProvider = ({ children }) => {
 
 	const Login = async (username, userpass, navigation) => {
 		await unitOwners.map((data, id) => {
-			if (username === data.uName && userpass === data.pw) {
+			console.log(data.UName, data.Password, username, userpass);
+			console.log(data.UName);
+			if (username === data.UName && userpass === data.Password) {
 				// setCurUser(data);
 
-				data.units.map((unit) => {
-					setCurUser({ ...data, tower: unit.toString().slice(0, 2) });
+				// data.Units.map((unit) => {
+				setCurUser({
+					...data,
+					Tower: data.Units.toString().slice(0, 2),
 				});
+				// });
 
 				navigation.navigate('Home');
 			} else {
 				setError(true);
+				console.log('error');
 			}
 		});
 	};
@@ -37,8 +43,8 @@ const DataProvider = ({ children }) => {
 	const AgentLogin = async (username, userpass, navigation) => {
 		await employees.map((data, id) => {
 			if (
-				username === data.uName &&
-				userpass === data.password &&
+				username === data.UName &&
+				userpass === data.Password &&
 				username.includes('AG')
 			) {
 				setCurUser(data);
@@ -112,7 +118,7 @@ const DataProvider = ({ children }) => {
 				db,
 				'maintenance',
 				'propertymanagement',
-				'tbl_Announcements'
+				'tbl_announcements'
 			)
 		);
 		const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -132,7 +138,12 @@ const DataProvider = ({ children }) => {
 
 	useEffect(() => {
 		const q = query(
-			collection(db, 'maintenance', 'propertymanagement', 'tbl_MRequest')
+			collection(
+				db,
+				'maintenance',
+				'propertymanagement',
+				'tbl_maintenance'
+			)
 		);
 		const unsubscribe = onSnapshot(q, (querySnapshot) => {
 			const mrequest = [];
@@ -156,7 +167,7 @@ const DataProvider = ({ children }) => {
 	const [visitors, setVisitors] = useState([{}]);
 	useEffect(() => {
 		const q = query(
-			collection(db, 'maintenance', 'frontdesk', 'tbl_visitor')
+			collection(db, 'maintenance', 'frontdesk', 'tbl_visitors')
 		);
 		const unsubscribe = onSnapshot(q, (querySnapshot) => {
 			const visitors = [];
@@ -176,7 +187,7 @@ const DataProvider = ({ children }) => {
 	const [bookings, setBookings] = useState([{}]);
 	useEffect(() => {
 		const q = query(
-			collection(db, 'maintenance', 'frontdesk', 'tbl_BAmenities')
+			collection(db, 'maintenance', 'frontdesk', 'tbl_bookings')
 		);
 		const unsubscribe = onSnapshot(q, (querySnapshot) => {
 			const bookings = [];
@@ -259,7 +270,7 @@ const DataProvider = ({ children }) => {
 	const [pBuyers, setPBuyers] = useState([{}]);
 	useEffect(() => {
 		const q = query(
-			collection(db, 'maintenance', 'salesmanagement', 'tbl_agentBuyers')
+			collection(db, 'maintenance', 'salesmanagement', 'tbl_prosBuyers')
 		);
 		const unsubscribe = onSnapshot(q, (querySnapshot) => {
 			const buyers = [];

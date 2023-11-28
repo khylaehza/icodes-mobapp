@@ -194,11 +194,11 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 					db,
 					'maintenance',
 					'propertymanagement',
-					'tbl_MRequest'
+					'tbl_maintenance'
 				),
 				{
-					RequestedBy: curUser.uid,
-					RequestedName: `${curUser.fName} ${curUser.lName}`,
+					RequestedBy: curUser.UID,
+					RequestedName: `${curUser.FName} ${curUser.LName}`,
 					MRequestID: id,
 					Unit: data.location,
 					CreatedDate: serverTimestamp(),
@@ -221,6 +221,7 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 	};
 
 	const ModalBody = () => {
+		let units = [curUser.Units];
 		return (
 			<>
 				<VStack gap={10}>
@@ -249,7 +250,7 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 							/>
 						}
 						control={control}
-						item={[...curUser.units, 'Exterior']}
+						item={[...units, 'Exterior']}
 						rules={{ required: 'Location is required.' }}
 						required={true}
 					/>
@@ -304,7 +305,7 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 							/>
 						}
 						control={control}
-						item={[...curUser.units, 'Exterior']}
+						item={[...curUser.Units, 'Exterior']}
 						disabled={true}
 					/>
 					<CusTextArea
@@ -445,7 +446,7 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 							mrequest.filter((element) => {
 								return (
 									element.Status == stat.name &&
-									curUser.uid === element.RequestedBy
+									curUser.UID === element.RequestedBy
 								);
 							}).length > 0;
 
@@ -481,7 +482,7 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 									.filter((element) => {
 										return (
 											element.Status == stat.name &&
-											curUser.uid === element.RequestedBy
+											curUser.UID === element.RequestedBy
 										);
 									})
 									.map((data, mkey) => (

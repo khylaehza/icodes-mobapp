@@ -87,13 +87,13 @@ const CusSelect = ({
 								<SelectPortal>
 									<SelectBackdrop />
 									<SelectContent
-										ml={40}
-										mr={40}
-										mt={40}
-										borderBottomLeftRadius={20}
-										borderBottomRightRadius={20}
-										borderTopLeftRadius={20}
-										borderTopRightRadius={20}
+									// ml={40}
+									// mr={40}
+									// mt={40}
+									// borderBottomLeftRadius={20}
+									// borderBottomRightRadius={20}
+									// borderTopLeftRadius={20}
+									// borderTopRightRadius={20}
 									>
 										{item.map((label, key) => (
 											<SelectItem
