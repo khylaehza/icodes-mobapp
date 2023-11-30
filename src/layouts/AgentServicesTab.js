@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
 
 const actions = [
 	{
-		location: 'Unit Designer',
+		location: 'Unit Viewer',
 		color: '#3f4c6e',
 		emoji: '👨🏻‍🚒',
 		border: '#0A2542',
@@ -159,14 +159,14 @@ const actions = [
 		nav: 'Finder',
 	},
 
-	// {
-	// 	location: 'Unit Calculator',
-	// 	color: '#bdc2cd',
-	// 	emoji: '🌊',
-	// 	border: '#7e879e',
-	// 	img: require('../../assets/imgs/booking.png'),
-	// 	fColor: '#0A2542',
-	// },
+	{
+		location: 'Unit Calculator',
+		color: '#bdc2cd',
+		emoji: '🌊',
+		border: '#7e879e',
+		img: require('../../assets/imgs/calculator.png'),
+		fColor: '#0A2542',
+	},
 ];
 
 export default AgentServicesTab;

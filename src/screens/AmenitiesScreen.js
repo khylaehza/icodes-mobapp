@@ -28,8 +28,6 @@ import CusModalView from '../components/CusModalView';
 const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 	const insets = useSafeAreaInsets();
 
-	console.log(amenities);
-
 	const status = [
 		{ name: 'Pending', icon: require('../../assets/imgs/wip.png') },
 		{ name: 'Confirmed', icon: require('../../assets/imgs/pending.png') },

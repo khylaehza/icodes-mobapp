@@ -21,10 +21,9 @@ import {
 	Feather,
 	AntDesign,
 } from '@expo/vector-icons';
-const AgentProfileScreen = ({ curUser, navigation }) => {
+const AgentProfileScreen = ({ curUser, navigation, Logout }) => {
 	const insets = useSafeAreaInsets();
 
-	console.log(curUser);
 	const other = [
 		{
 			name: 'Terms & Conditions',
@@ -35,7 +34,9 @@ const AgentProfileScreen = ({ curUser, navigation }) => {
 					color='black'
 				/>
 			),
-			nav: '',
+			func: () => {
+				navigation.navigate('');
+			},
 		},
 		{
 			name: 'Logout',
@@ -46,7 +47,10 @@ const AgentProfileScreen = ({ curUser, navigation }) => {
 					color='black'
 				/>
 			),
-			nav: 'Login',
+
+			func: () => {
+				Logout(navigation);
+			},
 		},
 	];
 	return (
@@ -60,8 +64,8 @@ const AgentProfileScreen = ({ curUser, navigation }) => {
 			<Center
 				p={20}
 				m={20}
-				alignContent='flex-start'
-				justifyContent='flex-start'
+				// alignContent='flex-start'
+				// justifyContent='flex-start'
 				mt={50}
 			>
 				<VStack
@@ -80,7 +84,7 @@ const AgentProfileScreen = ({ curUser, navigation }) => {
 					<CusText
 						type={'HEADING'}
 						text={`${curUser.FName} ${curUser.MName} ${curUser.LName}`}
-						style={{ fontSize: 24 }}
+						style={{ fontSize: 24, textAlign: 'center' }}
 					/>
 
 					<CusText
@@ -110,7 +114,7 @@ const AgentProfileScreen = ({ curUser, navigation }) => {
 				<VStack>
 					{other.map((item, okey) => (
 						<Button
-							onPress={() => navigation.navigate(item.nav)}
+							onPress={item.func}
 							variant='link'
 							key={okey}
 						>

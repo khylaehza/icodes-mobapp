@@ -52,7 +52,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 		'Married',
 		'Widow/Widower',
 	];
-	const preference = ['1 BR', 'Loft', '2BR', 'Studio', 'Others: '];
+	const preference = ['1 BR', '2BR BigCut', '2BR', 'Studio', '3BR'];
 	const purpose = ['Investment', 'Personal Use'];
 	const productKnow = [
 		'Advertisement',
@@ -335,18 +335,18 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 							maxLength={4}
 						/> */}
 						<Divider />
-						<CusCheckbox
-							checkLabels={preference}
+
+						<CusRadioGroup
+							radioLabels={preference}
 							control={control}
-							name={'preference'}
+							name={`preference`}
+							required={true}
 							icon={
 								<CusText
 									text={'Preference:'}
 									type={'SECONDARY'}
 								/>
 							}
-							required={true}
-							others={'otherPref'}
 							rules={{ required: 'Preference is required.' }}
 						/>
 						{/* <CusCheckbox
@@ -588,7 +588,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 					control={control}
 					icon={
 						<CusText
-							text={'Email'}
+							text={'Email: '}
 							type={'SECONDARY'}
 						/>
 					}
@@ -732,7 +732,6 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 								<Divider my='$1.5' />
 								{pBuyers
 									.filter((element) => {
-										console.log(element);
 										return (
 											element.PBType == stat.name &&
 											curUser.EmpId === element.AgentID

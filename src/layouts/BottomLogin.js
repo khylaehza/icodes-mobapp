@@ -4,24 +4,31 @@ import { useForm } from 'react-hook-form';
 import CusInput from '../components/CusInput';
 import { Button } from '@gluestack-ui/themed';
 import CusText from '../components/CusText';
+import CusInput1 from '../components/CusInput1';
+import { useData } from '../../DataContext';
+function BottomLogin({ navigation }) {
+	const { Login, AgentLogin, setError, error } = useData();
 
-// import { useData } from '../../DataContext';
-function BottomLogin({ navigation, unitOwners }) {
-	// const { Login } = useData();
 	const {
 		control,
 		handleSubmit,
 		formState: { errors },
 		watch,
-		// getValues,
+		reset,
 	} = useForm();
 
-	// const onLoginPressed = (data) => {
-	// 	let username = data['uname'];
-	// 	let userpass = data['pass'];
+	const onLoginPressed = (data) => {
+		let username = data['uname'];
+		let userpass = data['pass'];
 
-	// 	Login(username, userpass, navigation);
-	// };
+		if (username.includes('AG')) {
+			AgentLogin(username, userpass, navigation);
+		} else if (username.includes('Owner')) {
+			Login(username, userpass, navigation);
+		}
+
+		reset();
+	};
 
 	return (
 		<View style={style.container}>
@@ -36,13 +43,39 @@ function BottomLogin({ navigation, unitOwners }) {
 				text={"Congressional Town Center's Unit Owners & Agents."}
 				type={'PRIMARY'}
 			/>
+			<CusInput1
+				placeholder={'Username'}
+				name='uname'
+				control={control}
+				rules={{ required: 'Username is required.' }}
+				autoCapitalize='words'
+			/>
+			<CusInput1
+				placeholder={'Password'}
+				name='pass'
+				control={control}
+				rules={{ required: 'Password is required.' }}
+				type={'password'}
+				secureTextEntry
+			/>
+
+			{error !== 'none' && (
+				<>
+					{!watch('uname') && (
+						<CusText
+							text={error}
+							type={'SECONDARY'}
+							style={{ color: 'red', fontSize: 11 }}
+						/>
+					)}
+				</>
+			)}
+
 			<Button
 				bgColor='$blue300'
-				w={'80%'}
+				w={'100%'}
 				mt={10}
-				onPress={() => {
-					navigation.navigate('Type');
-				}}
+				onPress={handleSubmit(onLoginPressed)}
 			>
 				<CusText
 					text={'START'}

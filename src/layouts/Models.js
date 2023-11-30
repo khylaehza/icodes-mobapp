@@ -62,12 +62,12 @@ const Models = ({
 
 	const material = useLoader(
 		MTLLoader,
-		require('../../assets/models/units/studio1.mtl')
+		require('../../assets/models/units/2br.mtl')
 	);
 
 	const obj = useLoader(
 		OBJLoader,
-		require('../../assets/models/units/studio1.obj'),
+		require('../../assets/models/units/2br.obj'),
 		(loader) => {
 			material.preload();
 			loader.setMaterials(material);

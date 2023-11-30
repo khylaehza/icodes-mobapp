@@ -18,7 +18,7 @@ const CusInput = ({
 	type,
 	maxLength,
 	autoCapitalize,
-	icon,
+	icon = '',
 	readOnly = false,
 	w = 250,
 }) => {

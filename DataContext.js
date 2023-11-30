@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import Toast from 'react-native-root-toast';
 import { db } from './firebaseConfig';
 import { collection, query, onSnapshot } from 'firebase/firestore';
+
 const DataContext = React.createContext();
 
 export function useData() {
@@ -11,7 +12,7 @@ export function useData() {
 const DataProvider = ({ children }) => {
 	const [employees, setEmployees] = useState();
 	const [unitOwners, setUnitOwners] = useState();
-	const [error, setError] = useState(false);
+	const [error, setError] = useState('none');
 	const [curUser, setCurUser] = useState();
 	const [unitInfo, setUnitInfo] = useState();
 	const [anncmnts, setAnncmnts] = useState([{}]);
@@ -19,36 +20,76 @@ const DataProvider = ({ children }) => {
 	const [reports, setReports] = useState();
 
 	const Login = async (username, userpass, navigation) => {
+		var hasMatch =
+			unitOwners.filter((data) => {
+				return username === data.UName;
+			}).length > 0;
+
+		if (!hasMatch) {
+			setError('Account does not exist!');
+		}
+
 		await unitOwners.map((data, id) => {
-			console.log(data.UName, data.Password, username, userpass);
-			console.log(data.UName);
-			if (username === data.UName && userpass === data.Password) {
-				// setCurUser(data);
-
-				// data.Units.map((unit) => {
-				setCurUser({
-					...data,
-					Tower: data.Units.toString().slice(0, 2),
-				});
-				// });
-
-				navigation.navigate('Home');
+			if (
+				username === data.UName &&
+				userpass === data.Password &&
+				data.Status === false
+			) {
+				setError('Account is currently disabled.');
 			} else {
-				setError(true);
-				console.log('error');
+				if (
+					username === data.UName &&
+					userpass === data.Password &&
+					data.Status === true
+				) {
+					setCurUser({
+						...data,
+						Tower: data.Units.toString().slice(0, 2),
+					});
+
+					setError('none');
+					navigation.navigate('Home');
+				} else if (
+					username === data.UName &&
+					userpass != data.Password
+				) {
+					setError('Invalid Password.');
+				}
 			}
 		});
 	};
 
 	const AgentLogin = async (username, userpass, navigation) => {
+		var hasMatch =
+			employees.filter((data) => {
+				return username === data.UName;
+			}).length > 0;
+
+		if (!hasMatch) {
+			setError('Account does not exist!');
+		}
+
 		await employees.map((data, id) => {
 			if (
 				username === data.UName &&
 				userpass === data.Password &&
-				username.includes('AG')
+				data.Status === false
 			) {
-				setCurUser(data);
-				navigation.navigate('AgentHome');
+				setError('Account is currently disabled.');
+			} else {
+				if (
+					username === data.UName &&
+					userpass === data.Password &&
+					data.Status === true
+				) {
+					setCurUser(data);
+					navigation.navigate('AgentHome');
+				} else if (
+					username === data.UName &&
+					userpass != data.Password
+				) {
+					setError('Invalid Password.');
+				}
 			}
 		});
 	};
@@ -95,7 +136,7 @@ const DataProvider = ({ children }) => {
 	}, []);
 
 	useEffect(() => {
-		const q = query(collection(db, 'maintenance', 'admin', 'tbl_setTypes'));
+		const q = query(collection(db, 'maintenance', 'admin', 'tbl_setUnit'));
 		const unsubscribe = onSnapshot(q, (querySnapshot) => {
 			const unt = [];
 
@@ -287,11 +328,100 @@ const DataProvider = ({ children }) => {
 		return () => unsubscribe();
 	}, []);
 
+	const [amounts, setAmounts] = useState([{}]);
+	useEffect(() => {
+		const q = query(
+			collection(db, 'maintenance', 'admin', 'tbl_setAmount')
+		);
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const amt = [];
+
+			querySnapshot.forEach(
+				(doc) => {
+					amt.push({ ...doc.data(), id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+
+			setAmounts(amt);
+		});
+		return () => unsubscribe();
+	}, []);
+
+	const [units, setUnits] = useState([{}]);
+	const [unitTowerID, setUnitTowerID] = useState([{}]);
+	useEffect(() => {
+		const q = query(collection(db, 'maintenance', 'admin', 'tbl_towers'));
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const unit = [];
+			const unitTID = [];
+			querySnapshot.forEach(
+				(doc) => {
+					unit.push({ ...doc.data().Units });
+					unitTID.push({ ...doc.data().Units, id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+			setUnits(unit);
+			setUnitTowerID(unitTID);
+		});
+		return () => unsubscribe();
+	}, []);
+
+	const Logout = async (navigation) => {
+		setCurUser();
+		setError('none');
+		navigation.navigate('Login');
+	};
+
+	const [unitTypes, setUnitTypes] = useState([{}]);
+	useEffect(() => {
+		const q = query(
+			collection(db, 'maintenance', 'admin', 'tbl_unitTypes')
+		);
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const unTypes = [];
+			querySnapshot.forEach(
+				(doc) => {
+					unTypes.push({ ...doc.data(), id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+			setUnitTypes(unTypes);
+		});
+		return () => unsubscribe();
+	}, []);
+
+	const [towers, setTowers] = useState([{}]);
+	useEffect(() => {
+		const q = query(collection(db, 'maintenance', 'admin', 'tbl_towers'));
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const towers = [];
+			querySnapshot.forEach(
+				(doc) => {
+					towers.push({ ...doc.data(), id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+			setTowers(towers);
+		});
+		return () => unsubscribe();
+	}, []);
+
 	const value = {
 		Login,
 		AgentLogin,
 		unitOwners,
 		curUser,
+		setError,
 		error,
 		unitInfo,
 		anncmnts,
@@ -302,6 +432,11 @@ const DataProvider = ({ children }) => {
 		reports,
 		manningSched,
 		pBuyers,
+		amounts,
+		units,
+		Logout,
+		unitTypes,
+		towers,
 	};
 
 	return (

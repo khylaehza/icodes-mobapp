@@ -8,6 +8,7 @@ import {
 	CircleIcon,
 	FormControl,
 	FormControlLabel,
+	VStack,
 } from '@gluestack-ui/themed';
 import { useState } from 'react';
 import CusText from './CusText';
@@ -32,16 +33,16 @@ const CusRadioGroup = ({
 			render={({ field: { value, onChange }, fieldState: { error } }) => (
 				<>
 					<FormControl isRequired={required}>
-						<HStack
+						<VStack
 							justifyContent='flex-start'
-							alignItems='center'
+							// alignItems='center'
 						>
 							<FormControlLabel>{icon}</FormControlLabel>
 							<RadioGroup
 								value={value ? value : ''}
 								onChange={onChange}
 							>
-								<HStack
+								<VStack
 									space='lg'
 									ml={30}
 								>
@@ -59,9 +60,9 @@ const CusRadioGroup = ({
 											/>
 										</Radio>
 									))}
-								</HStack>
+								</VStack>
 							</RadioGroup>
-						</HStack>
+						</VStack>
 					</FormControl>
 				</>
 			)}

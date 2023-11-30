@@ -29,12 +29,13 @@ import AgentServicesTab from './src/layouts/AgentServicesTab';
 import FinderScreen from './src/layouts/FinderScreen';
 import DesignerScreen from './src/layouts/DesignerScreen';
 import InteractiveScreen from './src/screens/InteractiveScreen';
-
+import QuestionsScreen from './src/screens/QuestionsScreen';
 import DataProvider from './DataContext';
 import { useData } from './DataContext';
 import { VStack } from '@gluestack-ui/themed';
+import ResultScreen from './src/screens/ResultScreen';
 import CusText from './src/components/CusText';
-
+import UnitSuitable from './src/screens/UnitSuitable';
 const Stack = createNativeStackNavigator();
 function Home({ navigation }) {
 	const [expanded, setExpanded] = useState(false);
@@ -254,9 +255,21 @@ function Home({ navigation }) {
 	);
 }
 
-function AgentHome({ navigation }) {
+function AgentHome({ route, navigation }) {
 	const [expanded, setExpanded] = useState(false);
-	const { curUser, manningSched, pBuyers } = useData();
+	const {
+		curUser,
+		manningSched,
+		pBuyers,
+		unitInfo,
+		amounts,
+		units,
+		Logout,
+		amenities,
+		towers,
+		unitTypes,
+	} = useData();
+
 	const _renderIcon = (routeName, selectedTab) => {
 		let icon = '';
 		let name = '';
@@ -313,6 +326,11 @@ function AgentHome({ navigation }) {
 		);
 	};
 
+	const [unitChosen, setUnitChosen] = useState();
+	const [unitSize, setUnitSize] = useState();
+
+	const [dssResult, setDssRes] = useState();
+	const [pref, setPref] = useState();
 	return (
 		<CurvedBottomBarExpo.Navigator
 			type='DOWN'
@@ -344,6 +362,8 @@ function AgentHome({ navigation }) {
 					<AgentHomeScreen
 						setExpanded={setExpanded}
 						curUser={curUser}
+						manningSched={manningSched}
+						pBuyers={pBuyers}
 					/>
 				)}
 				position='LEFT'
@@ -365,6 +385,7 @@ function AgentHome({ navigation }) {
 					<FinderScreen
 						setExpanded={setExpanded}
 						curUser={curUser}
+						navigation={navigation}
 					/>
 				)}
 			/>
@@ -375,6 +396,9 @@ function AgentHome({ navigation }) {
 						setExpanded={setExpanded}
 						curUser={curUser}
 						navigation={navigation}
+						unitInfo={unitInfo}
+						setUnitChosen={setUnitChosen}
+						setUnitSize={setUnitSize}
 					/>
 				)}
 			/>
@@ -384,6 +408,51 @@ function AgentHome({ navigation }) {
 					<InteractiveScreen
 						setExpanded={setExpanded}
 						curUser={curUser}
+						navigation={navigation}
+						route={route}
+						unitChosen={unitChosen}
+						unitInfo={unitInfo}
+						amounts={amounts}
+						unitSize={unitSize}
+						units={units}
+					/>
+				)}
+			/>
+			<CurvedBottomBarExpo.Screen
+				name='Questions'
+				component={() => (
+					<QuestionsScreen
+						setExpanded={setExpanded}
+						amenities={amenities}
+						setDssRes={setDssRes}
+						navigation={navigation}
+					/>
+				)}
+			/>
+			<CurvedBottomBarExpo.Screen
+				name='Result'
+				component={() => (
+					<ResultScreen
+						setExpanded={setExpanded}
+						dssResult={dssResult}
+						navigation={navigation}
+						setPref={setPref}
+					/>
+				)}
+			/>
+			<CurvedBottomBarExpo.Screen
+				name='Suitable'
+				component={() => (
+					<UnitSuitable
+						setExpanded={setExpanded}
+						dssResult={dssResult}
+						navigation={navigation}
+						pref={pref}
+						units={units}
+						unitTypes={unitTypes}
+						unitData={unitInfo}
+						towers={towers}
+						amenities={amenities}
 					/>
 				)}
 			/>
@@ -399,7 +468,6 @@ function AgentHome({ navigation }) {
 				)}
 				position='RIGHT'
 			/>
-
 			<CurvedBottomBarExpo.Screen
 				name='Profile'
 				component={() => (
@@ -407,6 +475,7 @@ function AgentHome({ navigation }) {
 						setExpanded={setExpanded}
 						curUser={curUser}
 						navigation={navigation}
+						Logout={Logout}
 					/>
 				)}
 				position='RIGHT'
