@@ -37,7 +37,7 @@ const ReportScreen = ({ curUser, reports }) => {
 		// getValues,
 		clearErrors,
 	} = useForm();
-
+	const [cur, setCur] = useState({});
 	const Body = () => {
 		return (
 			<CusTextArea
@@ -86,20 +86,27 @@ const ReportScreen = ({ curUser, reports }) => {
 		}
 	};
 
-	const ModalView = ({ data }) => {
+	const ModalView = () => {
 		return (
-			<CusTextArea
-				placeholder={data.Report}
-				control={control}
-				icon={
-					<Ionicons
-						name='menu-outline'
-						size={22}
-						color='#0A2542'
+			<CusModalView
+				header={`Report #${cur.ReportID}`}
+				body={
+					<CusTextArea
+						placeholder={cur.Report}
+						control={control}
+						icon={
+							<Ionicons
+								name='menu-outline'
+								size={22}
+								color='#0A2542'
+							/>
+						}
+						name={`report`}
+						disabled={true}
 					/>
 				}
-				name={`report`}
-				disabled={true}
+				showModal={showDet}
+				setShowModal={setShowDet}
 			/>
 		);
 	};
@@ -202,32 +209,26 @@ const ReportScreen = ({ curUser, reports }) => {
 									style={{ textAlign: 'left' }}
 								/>
 
-								<CusModalView
-									header={`Report #${data.ReportID}`}
-									body={<ModalView data={data} />}
-									showModal={showDet}
-									setShowModal={setShowDet}
-									button={
-										<Button
-											variant='link'
-											size='xs'
-											onPress={() => {
-												setShowDet(true);
-											}}
-										>
-											<CusText
-												type={'PRIMARY'}
-												text={'View Info >'}
-												style={{
-													textAlign: 'left',
+								<Button
+									variant='link'
+									size='xs'
+									onPress={() => {
+										setShowDet(true);
+										setCur(data);
+									}}
+								>
+									<CusText
+										type={'PRIMARY'}
+										text={'View Info >'}
+										style={{
+											textAlign: 'left',
 
-													fontSize: 12,
-												}}
-												color='#0A2542'
-											/>
-										</Button>
-									}
-								/>
+											fontSize: 12,
+										}}
+										color='#0A2542'
+									/>
+								</Button>
+								<ModalView />
 							</HStack>
 						))}
 				</Box>

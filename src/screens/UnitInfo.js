@@ -7,6 +7,7 @@ import {
 	HStack,
 	Button,
 	Divider,
+	AvatarImage,
 } from '@gluestack-ui/themed';
 import { View, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,38 +17,19 @@ import DateChecker from '../utilities/DateChecker';
 const UnitInfo = ({ navigation, curUser, unitInfo }) => {
 	const insets = useSafeAreaInsets();
 
-	const info = [
-		{
-			name: 'Unit Name',
-			data: 'T1 - 5031',
-			acquired: 'May, 2, 2028',
-			status: 'Fully-Paid',
-			img: [
-				require('../../assets/gifs/avatar.gif'),
-				require('../../assets/imgs/Conference.jpg'),
-			],
-		},
-		{
-			name: 'Unit Name',
-			data: 'T1 - 5031',
-			acquired: 'May, 2, 2028',
-			status: 'On Processing',
-			img: [
-				require('../../assets/imgs/Conference.jpg'),
-				require('../../assets/gifs/avatar.gif'),
-			],
-		},
-		{
-			name: 'Unit Name',
-			data: 'T1 - 5031',
-			acquired: 'May, 2, 2028',
-			status: 'Partly Paid',
-			img: [
-				require('../../assets/gifs/avatar.gif'),
-				require('../../assets/imgs/Conference.jpg'),
-			],
-		},
-	];
+	let dInfo = [];
+	unitInfo.map((data) => {
+		if (data.Units && curUser.Units) {
+			if (data.Units.toString().includes(curUser.Units.toString())) {
+				dInfo.push({
+					image: [data.LayoutImage, ...data.TypeImage],
+					type: data.TypeName,
+					size: data.UnitSize,
+				});
+			}
+		}
+	});
+
 	return (
 		<View
 			style={{
@@ -71,13 +53,14 @@ const UnitInfo = ({ navigation, curUser, unitInfo }) => {
 						alignItems='center'
 					>
 						<Avatar size='2xl'>
-							{/* <AvatarFallbackText>John Doe</AvatarFallbackText> */}
-							<Image
-								source={require('../../assets/gifs/avatar.gif')}
+							<AvatarImage
+								source={{
+									uri: curUser.UnOwnerImg,
+								}}
 								resizeMode='contain'
+								size='500px'
 							/>
 						</Avatar>
-
 						<CusText
 							type={'HEADING'}
 							text={'Khyla Ehza Hondrade'}
@@ -106,81 +89,156 @@ const UnitInfo = ({ navigation, curUser, unitInfo }) => {
 						/>
 					</Box>
 
-					{unitInfo.map((data) => (
-						<>
-							{/* {data.Units.map((un) => { */}
-							{/* if (curUser.Units.includes(un)) {
-									const date = data.createdDate
-										? data.createdDate.seconds * 1000
-										: ''; */}
-							{/* return ( */}
-							<Box
-								padding={10}
-								rounded={15}
-								bgColor='$white300'
-								gap={2}
-								hardShadow={5}
-								shadowColor='$blue200'
-								w={'100%'}
-								mt={20}
-							>
-								<CusPager item={Array(data.TypeImage)} />
+					<Box
+						padding={15}
+						rounded={15}
+						bgColor='#FFF'
+						gap={2}
+						hardShadow={4}
+						shadowColor='$blue200'
+						w={'100%'}
+						mt={10}
+					>
+						<HStack
+							pr={5}
+							pl={5}
+							alignItems='center'
+						>
+							<CusText
+								type={'SECONDARY'}
+								style={{
+									textAlign: 'left',
+									fontSize: 13,
+									marginRight: 10,
+								}}
+								text={'Tower: '}
+							/>
+							<CusText
+								type={'PRIMARY'}
+								style={{ textAlign: 'left', fontSize: 13 }}
+								text={curUser.TName}
+							/>
+						</HStack>
+					</Box>
+					<Box
+						padding={15}
+						rounded={15}
+						bgColor='#FFF'
+						gap={2}
+						hardShadow={4}
+						shadowColor='$blue200'
+						w={'100%'}
+						mt={10}
+					>
+						<HStack
+							pr={5}
+							pl={5}
+							alignItems='center'
+						>
+							<CusText
+								type={'SECONDARY'}
+								style={{
+									textAlign: 'left',
+									fontSize: 13,
+									marginRight: 10,
+								}}
+								text={'Unit Name: '}
+							/>
+							<CusText
+								type={'PRIMARY'}
+								style={{ textAlign: 'left', fontSize: 13 }}
+								text={curUser.Units}
+							/>
+						</HStack>
+					</Box>
+					{/* <CusPager item={} /> */}
+					{dInfo.map((data) => {
+						return (
+							<>
 								<Box
-									p={5}
-									alignItems='center'
+									padding={15}
+									rounded={15}
+									bgColor='#FFF'
+									gap={2}
+									hardShadow={4}
+									shadowColor='$blue200'
+									w={'100%'}
+									mt={10}
 								>
-									<CusText
-										type={'TERTIARY'}
-										// text={curUser.Units.toString()}
-										text={curUser.Units.toString()}
-									/>
+									<CusPager item={data.image} />
+								</Box>
 
-									<HStack>
+								<Box
+									padding={15}
+									rounded={15}
+									bgColor='#FFF'
+									gap={2}
+									hardShadow={4}
+									shadowColor='$blue200'
+									w={'100%'}
+									mt={10}
+								>
+									<HStack
+										pr={5}
+										pl={5}
+										alignItems='center'
+									>
 										<CusText
 											type={'SECONDARY'}
 											style={{
-												textAlign: 'justify',
-												fontSize: 12,
+												textAlign: 'left',
+												fontSize: 13,
+												marginRight: 10,
 											}}
-											text={'Purchased Date: '}
+											text={'Unit Type: '}
 										/>
 										<CusText
-											type={'SECONDARY'}
+											type={'PRIMARY'}
 											style={{
-												textAlign: 'justify',
-												fontSize: 12,
+												textAlign: 'left',
+												fontSize: 13,
 											}}
-											text={
-												<DateChecker
-													dateToCheck={new Date(date)}
-												/>
-											}
+											text={data.type}
 										/>
 									</HStack>
-
-									<CusText
-										type={'SECONDARY'}
-										style={{
-											textAlign: 'justify',
-											fontSize: 12,
-										}}
-										text={`Size: ${data.UnitSize} sq. meters`}
-									/>
-									<CusText
-										type={'SECONDARY'}
-										style={{
-											textAlign: 'justify',
-											fontSize: 12,
-										}}
-										text={`Type: ${data.TypeName}`}
-									/>
 								</Box>
-							</Box>
-							{/* ); */}
-							{/* } */}
-							{/* })} */}
-						</>
-					))}
+								<Box
+									padding={15}
+									rounded={15}
+									bgColor='#FFF'
+									gap={2}
+									hardShadow={4}
+									shadowColor='$blue200'
+									w={'100%'}
+									mt={10}
+								>
+									<HStack
+										pr={5}
+										pl={5}
+										alignItems='center'
+									>
+										<CusText
+											type={'SECONDARY'}
+											style={{
+												textAlign: 'left',
+												fontSize: 13,
+												marginRight: 10,
+											}}
+											text={'Unit Size: '}
+										/>
+										<CusText
+											type={'PRIMARY'}
+											style={{
+												textAlign: 'left',
+												fontSize: 13,
+											}}
+											text={data.size}
+										/>
+									</HStack>
+								</Box>
+							</>
+						);
+					})}
 				</ScrollView>
 			</Center>
 		</View>

@@ -18,6 +18,7 @@ import {
 } from '@gluestack-ui/themed';
 import { Entypo } from '@expo/vector-icons';
 import { Controller } from 'react-hook-form';
+import { ScrollView, View } from 'react-native';
 import CusText from './CusText';
 const CusSelect = ({
 	control,
@@ -26,8 +27,6 @@ const CusSelect = ({
 	placeholder,
 	icon,
 	item,
-	// value,
-	// setValue,
 	variant = 'underlined',
 	textAlign = 'left',
 	w = 250,
@@ -36,6 +35,7 @@ const CusSelect = ({
 	required,
 	softShadow = 0,
 	shadowColor = null,
+	hasDropdown = true,
 }) => {
 	return (
 		<Controller
@@ -77,31 +77,40 @@ const CusSelect = ({
 										textAlign={textAlign}
 									/>
 
-									<Entypo
-										name='chevron-small-down'
-										size={15}
-										color='black'
-										style={{ marginRight: 10 }}
-									/>
+									{hasDropdown && (
+										<Entypo
+											name='chevron-small-down'
+											size={15}
+											color='black'
+											style={{ marginRight: 10 }}
+										/>
+									)}
 								</SelectTrigger>
 								<SelectPortal>
 									<SelectBackdrop />
 									<SelectContent
-									// ml={40}
-									// mr={40}
-									// mt={40}
-									// borderBottomLeftRadius={20}
-									// borderBottomRightRadius={20}
-									// borderTopLeftRadius={20}
-									// borderTopRightRadius={20}
+										// ml={40}
+										// mr={40}
+										// mt={40}
+										// borderBottomLeftRadius={20}
+										// borderBottomRightRadius={20}
+										// borderTopLeftRadius={20}
+										// borderTopRightRadius={20}
+
+										w={'100%'}
 									>
-										{item.map((label, key) => (
-											<SelectItem
-												label={label}
-												value={label}
-												key={key}
-											/>
-										))}
+										<ScrollView
+											showsVerticalScrollIndicator={false}
+											style={{ width: '100%' }}
+										>
+											{item.map((label, key) => (
+												<SelectItem
+													label={label}
+													value={label}
+													key={key}
+												/>
+											))}
+										</ScrollView>
 									</SelectContent>
 								</SelectPortal>
 							</Select>

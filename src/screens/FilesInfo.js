@@ -6,21 +6,15 @@ import {
 	Box,
 	HStack,
 	Button,
+	AvatarImage,
 } from '@gluestack-ui/themed';
 import { View, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CusText from '../components/CusText';
-const FilesInfo = ({ navigation }) => {
+const FilesInfo = ({ navigation, curUser }) => {
 	const insets = useSafeAreaInsets();
 
-	const info = [
-		{ name: 'Last Name', data: 'Hondrade' },
-		{ name: 'Middle Name', data: 'Hondrade' },
-		{ name: 'Given Name', data: 'Hondrade' },
-		{ name: 'Unit Owner No.', data: 'Hondrade' },
-		{ name: 'Surname', data: 'Hondrade' },
-		{ name: 'Surname', data: 'Hondrade' },
-	];
+	console.log(curUser);
 	return (
 		<View
 			style={{
@@ -34,7 +28,6 @@ const FilesInfo = ({ navigation }) => {
 				m={20}
 				alignContent='flex-start'
 				justifyContent='flex-start'
-				h={220}
 				mt={50}
 			>
 				<VStack
@@ -43,10 +36,12 @@ const FilesInfo = ({ navigation }) => {
 					alignItems='center'
 				>
 					<Avatar size='2xl'>
-						{/* <AvatarFallbackText>John Doe</AvatarFallbackText> */}
-						<Image
-							source={require('../../assets/gifs/avatar.gif')}
+						<AvatarImage
+							source={{
+								uri: curUser.UnOwnerImg,
+							}}
 							resizeMode='contain'
+							size='500px'
 						/>
 					</Avatar>
 
@@ -62,6 +57,7 @@ const FilesInfo = ({ navigation }) => {
 						style={{ marginTop: -8 }}
 					/>
 				</VStack>
+
 				<Box
 					bgColor='$blue200'
 					rounded={5}
@@ -77,6 +73,113 @@ const FilesInfo = ({ navigation }) => {
 						text={'Files'}
 					/>
 				</Box>
+				<ScrollView
+					showsVerticalScrollIndicator={false}
+					style={{ width: '100%' }}
+				>
+					<Box
+						gap={20}
+						w={'100%'}
+						mb={290}
+						mt={10}
+					>
+						<Box
+							padding={15}
+							rounded={15}
+							bgColor='#FFF'
+							hardShadow={4}
+							shadowColor='$blue200'
+							w={'100%'}
+						>
+							<Image
+								source={{ uri: curUser.Billing }}
+								resizeMode='contain'
+								size='xl'
+								w={'100%'}
+							/>
+						</Box>
+
+						<Box
+							padding={15}
+							rounded={15}
+							bgColor='#FFF'
+							hardShadow={4}
+							shadowColor='$blue200'
+							w={'100%'}
+						>
+							<Image
+								source={{ uri: curUser.Cert }}
+								resizeMode='contain'
+								size='xl'
+								w={'100%'}
+							/>
+						</Box>
+
+						<Box
+							padding={15}
+							rounded={15}
+							bgColor='#FFF'
+							hardShadow={4}
+							shadowColor='$blue200'
+							w={'100%'}
+						>
+							<Image
+								source={{ uri: curUser.Tin }}
+								resizeMode='contain'
+								size='xl'
+								w={'100%'}
+							/>
+						</Box>
+
+						<Box
+							padding={15}
+							rounded={15}
+							bgColor='#FFF'
+							hardShadow={4}
+							shadowColor='$blue200'
+							w={'100%'}
+						>
+							<Image
+								source={{ uri: curUser.Id1 }}
+								resizeMode='contain'
+								size='xl'
+								w={'100%'}
+							/>
+						</Box>
+
+						<Box
+							padding={15}
+							rounded={15}
+							bgColor='#FFF'
+							hardShadow={4}
+							shadowColor='$blue200'
+							w={'100%'}
+						>
+							<Image
+								source={{ uri: curUser.Id2 }}
+								resizeMode='contain'
+								size='xl'
+								w={'100%'}
+							/>
+						</Box>
+
+						<Box
+							padding={15}
+							rounded={15}
+							bgColor='#FFF'
+							hardShadow={4}
+							shadowColor='$blue200'
+							w={'100%'}
+						>
+							<Image
+								source={{ uri: curUser.Income }}
+								resizeMode='contain'
+								size='xl'
+								w={'100%'}
+							/>
+						</Box>
+					</Box>
+				</ScrollView>
 			</Center>
 		</View>
 	);

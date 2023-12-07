@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
 
 	topView: {
 		width: '100%',
-		height: '60%',
+		height: '50%',
 	},
 });
 

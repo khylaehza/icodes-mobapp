@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect } from 'react';
-import Toast from 'react-native-root-toast';
 import { db } from './firebaseConfig';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 
@@ -30,21 +29,23 @@ const DataProvider = ({ children }) => {
 		}
 
 		await unitOwners.map((data, id) => {
+			let tower = data.Units.toString().slice(0, 2);
 			if (
 				username === data.UName &&
 				userpass === data.Password &&
-				data.Status === false
+				!data.Status
 			) {
 				setError('Account is currently disabled.');
 			} else {
 				if (
 					username === data.UName &&
 					userpass === data.Password &&
-					data.Status === true
+					data.Status
 				) {
 					setCurUser({
 						...data,
 						Tower: data.Units.toString().slice(0, 2),
+						TName: `Tower ${tower.slice(1)} (${tower})`,
 					});
 
 					setError('none');
@@ -416,6 +417,68 @@ const DataProvider = ({ children }) => {
 		return () => unsubscribe();
 	}, []);
 
+	const [payterm, setPayterm] = useState([{}]);
+	useEffect(() => {
+		const q = query(collection(db, 'maintenance', 'admin', 'tbl_payTerms'));
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const payterm = [];
+			querySnapshot.forEach(
+				(doc) => {
+					payterm.push({ ...doc.data(), id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+			setPayterm(payterm);
+		});
+		return () => unsubscribe();
+	}, []);
+
+	const [soa, setSOA] = useState([{}]);
+	useEffect(() => {
+		const q = query(
+			collection(db, 'maintenance', 'accountingmanagement', 'tbl_soa')
+		);
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const soa = [];
+			querySnapshot.forEach(
+				(doc) => {
+					soa.push({ ...doc.data(), id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+			setSOA(soa);
+		});
+		return () => unsubscribe();
+	}, []);
+
+	const [transactions, setTransactions] = useState([{}]);
+	useEffect(() => {
+		const q = query(
+			collection(
+				db,
+				'maintenance',
+				'accountingmanagement',
+				'tbl_transactions'
+			)
+		);
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const transactions = [];
+			querySnapshot.forEach(
+				(doc) => {
+					transactions.push({ ...doc.data(), id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+			setTransactions(transactions);
+		});
+		return () => unsubscribe();
+	}, []);
 	const value = {
 		Login,
 		AgentLogin,
@@ -437,6 +500,9 @@ const DataProvider = ({ children }) => {
 		Logout,
 		unitTypes,
 		towers,
+		payterm,
+		soa,
+		transactions,
 	};
 
 	return (

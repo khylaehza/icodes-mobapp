@@ -29,8 +29,11 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 	const insets = useSafeAreaInsets();
 
 	const status = [
-		{ name: 'Pending', icon: require('../../assets/imgs/wip.png') },
-		{ name: 'Confirmed', icon: require('../../assets/imgs/pending.png') },
+		{ name: 'Pending', icon: require('../../assets/imgs/pending.png') },
+		{
+			name: 'Confirmed',
+			icon: require('../../assets/imgs/wip.png'),
+		},
 		{ name: 'Completed', icon: require('../../assets/imgs/done.png') },
 	];
 
@@ -53,6 +56,8 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 		},
 	});
 
+	const [cur, setCur] = useState({});
+
 	const resetFields = () => {
 		reset();
 		setSelectedDate();
@@ -63,6 +68,7 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 		setShowModal(false);
 		setSelectedDate('');
 		clearErrors();
+
 		try {
 			addDoc(collection(db, 'maintenance', 'frontdesk', 'tbl_bookings'), {
 				RequestedBy: curUser.UID,
@@ -73,7 +79,7 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 				NumPerson: data.number,
 				Status: 'Pending',
 				CreatedDate: serverTimestamp(),
-				Tower: curUser.Tower,
+				TNum: curUser.TName,
 			});
 			Toast.show('Successful', {
 				duration: Toast.durations.SHORT,
@@ -135,79 +141,86 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 		);
 	};
 
-	const ModalView = ({ data }) => {
+	const ModalView = () => {
 		return (
 			<>
-				<VStack gap={20}>
-					<HStack
-						justifyContent='space-between'
-						alignItems='center'
-					>
-						<Ionicons
-							name='md-pricetag'
-							size={18}
-							color='#0A2542'
-						/>
+				<CusModalView
+					header={`Booking #${cur.BookingID}`}
+					body={
+						<VStack gap={20}>
+							<HStack
+								justifyContent='space-between'
+								alignItems='center'
+							>
+								<Ionicons
+									name='md-pricetag'
+									size={18}
+									color='#0A2542'
+								/>
 
-						<Box
-							w={245}
-							borderBottomWidth={1}
-							borderBottomColor='$gray100'
-							pb={5}
-						>
-							<CusText
-								text={data.AmenityType}
-								type={'PRIMARY'}
-								style={{ color: '#8e8e8e' }}
-							/>
-						</Box>
-					</HStack>
-					<HStack
-						justifyContent='space-between'
-						alignItems='center'
-					>
-						<AntDesign
-							name='calendar'
-							size={22}
-							color='#0A2542'
-						/>
-						<Box
-							w={245}
-							borderBottomWidth={1}
-							borderBottomColor='$gray100'
-							pb={5}
-						>
-							<CusText
-								text={data.Date}
-								type={'PRIMARY'}
-								style={{ color: '#8e8e8e' }}
-							/>
-						</Box>
-					</HStack>
-					<HStack
-						justifyContent='space-between'
-						alignItems='center'
-					>
-						<Ionicons
-							name='ios-people'
-							size={23}
-							color='#0A2542'
-						/>
+								<Box
+									w={245}
+									borderBottomWidth={1}
+									borderBottomColor='$gray100'
+									pb={5}
+								>
+									<CusText
+										text={cur.AmenityType}
+										type={'PRIMARY'}
+										style={{ color: '#8e8e8e' }}
+									/>
+								</Box>
+							</HStack>
+							<HStack
+								justifyContent='space-between'
+								alignItems='center'
+							>
+								<AntDesign
+									name='calendar'
+									size={22}
+									color='#0A2542'
+								/>
+								<Box
+									w={245}
+									borderBottomWidth={1}
+									borderBottomColor='$gray100'
+									pb={5}
+								>
+									<CusText
+										text={cur.Date}
+										type={'PRIMARY'}
+										style={{ color: '#8e8e8e' }}
+									/>
+								</Box>
+							</HStack>
+							<HStack
+								justifyContent='space-between'
+								alignItems='center'
+							>
+								<Ionicons
+									name='ios-people'
+									size={23}
+									color='#0A2542'
+								/>
 
-						<Box
-							w={245}
-							borderBottomWidth={1}
-							borderBottomColor='$gray100'
-							pb={5}
-						>
-							<CusText
-								text={data.NumPerson}
-								type={'PRIMARY'}
-								style={{ color: '#8e8e8e' }}
-							/>
-						</Box>
-					</HStack>
-				</VStack>
+								<Box
+									w={245}
+									borderBottomWidth={1}
+									borderBottomColor='$gray100'
+									pb={5}
+								>
+									<CusText
+										text={cur.NumPerson}
+										type={'PRIMARY'}
+										style={{ color: '#8e8e8e' }}
+									/>
+								</Box>
+							</HStack>
+						</VStack>
+					}
+					showModal={showDet}
+					setShowModal={setShowDet}
+				/>
 			</>
 		);
 	};
@@ -268,10 +281,11 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 										hardShadow='4'
 										shadowColor='$blue300'
 										key={key}
+										width={240}
 									>
 										<Image
 											source={{ uri: data.AmenityImg }}
-											width={200}
+											// width={200}
 											h={120}
 											borderTopLeftRadius={15}
 											borderTopRightRadius={15}
@@ -332,7 +346,7 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 											/>
 											<CusText
 												type={'PRIMARY'}
-												text={`Capacity: ${data.Capacity}`}
+												text={`Cap: ${data.Capacity}`}
 												style={{ fontSize: 14 }}
 											/>
 										</HStack>
@@ -347,10 +361,10 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 					{status.map((stat, key) => {
 						var hasMatch =
 							bookings.filter((element) => {
-								console.log(element);
 								return (
 									element.Status == stat.name &&
-									curUser.UID === element.RequestedBy
+									`${curUser.FName} ${curUser.LName}` ===
+										element.UnitOwner
 								);
 							}).length > 0;
 
@@ -383,17 +397,9 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 								<Divider my='$1.5' />
 								{bookings
 									.filter((element) => {
-										console.log(
-											curUser.FName + ' ' + curUser.LName,
-											element.UnitOwner,
-											element.Status,
-											stat.name
-										);
 										return (
 											element.Status == stat.name &&
-											curUser.FName +
-												' ' +
-												curUser.LName ===
+											`${curUser.FName} ${curUser.LName}` ===
 												element.UnitOwner
 										);
 										// return (
@@ -415,34 +421,26 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 												text={`Booking #${data.BookingID}`}
 												style={{ textAlign: 'left' }}
 											/>
+											<Button
+												variant='link'
+												size='xs'
+												onPress={() => {
+													setShowDet(true);
+													setCur(data);
+												}}
+											>
+												<CusText
+													type={'PRIMARY'}
+													text={'View Info >'}
+													style={{
+														textAlign: 'left',
 
-											<CusModalView
-												header={`Booking #${data.BookingID}`}
-												body={<ModalView data={data} />}
-												showModal={showDet}
-												setShowModal={setShowDet}
-												button={
-													<Button
-														variant='link'
-														size='xs'
-														onPress={() => {
-															setShowDet(true);
-														}}
-													>
-														<CusText
-															type={'PRIMARY'}
-															text={'View Info >'}
-															style={{
-																textAlign:
-																	'left',
-
-																fontSize: 12,
-															}}
-															color='#0A2542'
-														/>
-													</Button>
-												}
-											/>
+														fontSize: 12,
+													}}
+													color='#0A2542'
+												/>
+											</Button>
+											<ModalView />
 										</HStack>
 									))}
 								{!hasMatch && (

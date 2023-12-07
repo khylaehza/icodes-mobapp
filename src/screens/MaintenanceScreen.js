@@ -89,7 +89,7 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 	const [videos, setVideos] = useState({
 		videos: [],
 	});
-
+	const [cur, setCur] = useState({});
 	const img = images['images'];
 	const vid = videos['videos'];
 
@@ -290,73 +290,80 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 		);
 	};
 
-	const ModalView = ({ data }) => {
-		return (
-			<>
-				<VStack gap={10}>
-					<CusSelect
-						placeholder={data.Unit}
-						name={`location`}
-						icon={
-							<MaterialIcons
-								name='location-pin'
-								size={20}
-								color='#0A2542'
+	const ModalView = () => {
+		if (cur.RequestImg) {
+			return (
+				<CusModalView
+					header={`Ticket #${cur.MRequestID}`}
+					body={
+						<VStack gap={10}>
+							<CusSelect
+								placeholder={cur.Unit}
+								name={`location`}
+								icon={
+									<MaterialIcons
+										name='location-pin'
+										size={20}
+										color='#0A2542'
+									/>
+								}
+								control={control}
+								item={[...curUser.Units, 'Exterior']}
+								disabled={true}
 							/>
-						}
-						control={control}
-						item={[...curUser.Units, 'Exterior']}
-						disabled={true}
-					/>
-					<CusTextArea
-						placeholder={data.Details}
-						control={control}
-						icon={
-							<Ionicons
-								name='menu-outline'
-								size={22}
-								color='#0A2542'
+							<CusTextArea
+								placeholder={cur.Details}
+								control={control}
+								icon={
+									<Ionicons
+										name='menu-outline'
+										size={22}
+										color='#0A2542'
+									/>
+								}
+								name={`details`}
+								disabled={true}
 							/>
-						}
-						name={`details`}
-						disabled={true}
-					/>
-					<CusInput
-						placeholder={data.RepairType}
-						name={`request`}
-						control={control}
-						icon={
-							<Ionicons
-								name='md-pricetag'
-								size={18}
-								color='#0A2542'
+							<CusInput
+								placeholder={cur.RepairType}
+								name={`request`}
+								control={control}
+								icon={
+									<Ionicons
+										name='md-pricetag'
+										size={18}
+										color='#0A2542'
+									/>
+								}
+								readOnly={true}
 							/>
-						}
-						readOnly={true}
-					/>
-					<CusMediaPicker
-						icon={
-							<Ionicons
-								name='ios-image'
-								size={20}
-								color='#0A2542'
+							<CusMediaPicker
+								icon={
+									<Ionicons
+										name='ios-image'
+										size={20}
+										color='#0A2542'
+									/>
+								}
+								control={control}
+								name={'media'}
+								setVideos={setVideos}
+								setImages={setImages}
+								img={cur.RequestImg.filter(
+									(word) => !word.includes('mp4')
+								)}
+								vid={cur.RequestImg.filter((word) =>
+									word.includes('mp4')
+								)}
+								text={'Images/Videos'}
 							/>
-						}
-						control={control}
-						name={'media'}
-						setVideos={setVideos}
-						setImages={setImages}
-						img={data.RequestImg.filter(
-							(word) => !word.includes('mp4')
-						)}
-						vid={data.RequestImg.filter((word) =>
-							word.includes('mp4')
-						)}
-						text={'Images/Videos'}
-					/>
-				</VStack>
-			</>
-		);
+						</VStack>
+					}
+					showModal={showDet}
+					setShowModal={setShowDet}
+				/>
+			);
+		}
 	};
 	return (
 		<View
@@ -446,7 +453,8 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 							mrequest.filter((element) => {
 								return (
 									element.Status == stat.name &&
-									curUser.UID === element.RequestedBy
+									(curUser.Units === element.Unit ||
+										element.RequestedBy == curUser.UID)
 								);
 							}).length > 0;
 
@@ -482,7 +490,9 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 									.filter((element) => {
 										return (
 											element.Status == stat.name &&
-											curUser.UID === element.RequestedBy
+											(curUser.Units === element.Unit ||
+												element.RequestedBy ==
+													curUser.UID)
 										);
 									})
 									.map((data, mkey) => (
@@ -501,32 +511,25 @@ const MaintenanceScreen = ({ curUser, mrequest }) => {
 													textAlign: 'left',
 												}}
 											/>
-											<CusModalView
-												header={`Ticket #${data.MRequestID}`}
-												body={<ModalView data={data} />}
-												showModal={showDet}
-												setShowModal={setShowDet}
-												button={
-													<Button
-														variant='link'
-														size='xs'
-														onPress={() => {
-															setShowDet(true);
-														}}
-													>
-														<CusText
-															type={'PRIMARY'}
-															text={'View Info >'}
-															style={{
-																textAlign:
-																	'left',
-																fontSize: 12,
-															}}
-															color='#0A2542'
-														/>
-													</Button>
-												}
-											/>
+											<Button
+												variant='link'
+												size='xs'
+												onPress={() => {
+													setShowDet(true);
+													setCur(data);
+												}}
+											>
+												<CusText
+													type={'PRIMARY'}
+													text={'View Info >'}
+													style={{
+														textAlign: 'left',
+														fontSize: 12,
+													}}
+													color='#0A2542'
+												/>
+											</Button>
+											<ModalView />
 										</HStack>
 									))}
 								{!hasMatch && (

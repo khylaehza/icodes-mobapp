@@ -2,10 +2,10 @@ import { PieChart } from 'react-native-gifted-charts';
 import { Box, Text } from '@gluestack-ui/themed';
 import CusText from './CusText';
 
-const CusPie = () => {
+const CusPie = ({ val }) => {
 	const pieData = [
-		{ value: 70, color: '#EEE' },
-		{ value: 30, color: '#8695A6' },
+		{ value: Number(val), color: '#EEE' },
+		{ value: 100 - val, color: '#8695A6' },
 	];
 	return (
 		<Box
@@ -19,7 +19,7 @@ const CusPie = () => {
 				centerLabelComponent={() => {
 					return (
 						<CusText
-							text={'70% PAID'}
+							text={`${val}% PAID`}
 							type={'PRIMARY'}
 							style={{
 								fontSize: 12,

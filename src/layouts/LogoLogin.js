@@ -25,7 +25,7 @@ const style = StyleSheet.create({
 		position: 'absolute',
 		zIndex: 3,
 		elevation: 10,
-		bottom: 320,
+		// bottom: 370,
 	},
 });
 export default LogoLogin;

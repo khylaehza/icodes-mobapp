@@ -23,7 +23,8 @@ const AnnouncementScreen = ({ setExpanded, anncmnts, curUser }) => {
 		anncmnts.filter((element) => {
 			return (
 				element.Purpose == type &&
-				element.For.slice(-4, -2) == curUser.Tower
+				element.For.includes(curUser.Tower) &&
+				element.Status
 			);
 		}).length > 0;
 
@@ -112,7 +113,7 @@ const AnnouncementScreen = ({ setExpanded, anncmnts, curUser }) => {
 						.filter((element) => {
 							return (
 								element.Purpose == type &&
-								curUser.Tower == element.For.slice(-4, -2) &&
+								element.For.includes(curUser.Tower) &&
 								element.Status
 							);
 						})
@@ -121,7 +122,10 @@ const AnnouncementScreen = ({ setExpanded, anncmnts, curUser }) => {
 								? data.DatePosted.seconds * 1000
 								: '';
 							return (
-								<View key={key}>
+								<View
+									key={key}
+									style={{ width: '80%' }}
+								>
 									<Box
 										ml={20}
 										mr={20}
@@ -133,6 +137,7 @@ const AnnouncementScreen = ({ setExpanded, anncmnts, curUser }) => {
 										hardShadow={5}
 										shadowColor='$blue200'
 										key={key}
+										// w={'100%'}
 									>
 										<Image
 											source={{
@@ -148,7 +153,7 @@ const AnnouncementScreen = ({ setExpanded, anncmnts, curUser }) => {
 										>
 											<CusText
 												type={'TERTIARY'}
-												text={data.Description}
+												text={data.Subject}
 												style={{
 													textTransform: 'uppercase',
 												}}
@@ -194,24 +199,8 @@ const AnnouncementScreen = ({ setExpanded, anncmnts, curUser }) => {
 												style={{
 													textAlign: 'justify',
 												}}
-												text={
-													'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Nontellus orci ac auctor augue. Facilisi nullam vehicula ipsum a arcu cursus.'
-												}
+												text={data.Description}
 											/>
-
-											<Button
-												variant='link'
-												justifyContent='flex-start'
-											>
-												<CusText
-													type={'SECONDARY'}
-													style={{
-														fontSize: 12,
-													}}
-													text={'Find out more.'}
-													color={'$blue300'}
-												/>
-											</Button>
 										</Box>
 									</Box>
 								</View>

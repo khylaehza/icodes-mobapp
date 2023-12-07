@@ -36,10 +36,12 @@ const ProfileScreen = ({ navigation, curUser }) => {
 					color='black'
 				/>
 			),
-			nav: 'Reports',
+			func: () => {
+				navigation.navigate('Reports');
+			},
 		},
 		{
-			name: 'Terms & Conditions',
+			name: 'End User License Agreement',
 			icon: (
 				<Ionicons
 					name='information-circle-outline'
@@ -47,7 +49,22 @@ const ProfileScreen = ({ navigation, curUser }) => {
 					color='black'
 				/>
 			),
-			nav: '',
+			func: () => {
+				navigation.navigate('EndUser');
+			},
+		},
+		{
+			name: 'Privacy Policy',
+			icon: (
+				<Ionicons
+					name='information-circle-outline'
+					size={22}
+					color='black'
+				/>
+			),
+			func: () => {
+				navigation.navigate('Privacy');
+			},
 		},
 		{
 			name: 'Logout',
@@ -58,7 +75,10 @@ const ProfileScreen = ({ navigation, curUser }) => {
 					color='black'
 				/>
 			),
-			nav: 'Login',
+
+			func: () => {
+				Logout(navigation);
+			},
 		},
 	];
 	const items = [
@@ -95,7 +115,7 @@ const ProfileScreen = ({ navigation, curUser }) => {
 					color='black'
 				/>
 			),
-			description: 'You have submitted 15 documents.',
+			description: 'You have submitted 6 documents.',
 			action: 'FilesInfo',
 		},
 	];
@@ -122,7 +142,9 @@ const ProfileScreen = ({ navigation, curUser }) => {
 				>
 					<Avatar size='2xl'>
 						<AvatarImage
-							source={{ uri: curUser.UnOwnerImg }}
+							source={{
+								uri: curUser.UnOwnerImg,
+							}}
 							resizeMode='contain'
 							size='500px'
 						/>
@@ -150,8 +172,11 @@ const ProfileScreen = ({ navigation, curUser }) => {
 						shadowColor='$blue200'
 						alignItems='center'
 						justifyContent='space-between'
-						p={20}
+						p={10}
 						key={key}
+						onPress={() => {
+							navigation.navigate(item.action);
+						}}
 					>
 						<HStack
 							justifyContent={'space-between'}
@@ -162,7 +187,7 @@ const ProfileScreen = ({ navigation, curUser }) => {
 							<Box w={'15%'}>{item.icon}</Box>
 							<HStack
 								justifyContent={'space-between'}
-								w={'85%'}
+								w={'75%'}
 								alignItems='center'
 							>
 								<VStack gap={-2}>
@@ -183,20 +208,20 @@ const ProfileScreen = ({ navigation, curUser }) => {
 										}}
 									/>
 								</VStack>
-
-								<Button
-									variant='link'
-									onPress={() => {
-										navigation.navigate(item.action);
-									}}
-								>
-									<Ionicons
-										name='chevron-forward'
-										size={24}
-										color='black'
-									/>
-								</Button>
 							</HStack>
+							<Button
+								variant='link'
+								onPress={() => {
+									navigation.navigate(item.action);
+								}}
+								w={50}
+							>
+								<Ionicons
+									name='chevron-forward'
+									size={24}
+									color='black'
+								/>
+							</Button>
 						</HStack>
 					</Box>
 				))}
@@ -205,7 +230,7 @@ const ProfileScreen = ({ navigation, curUser }) => {
 				<VStack>
 					{other.map((item, okey) => (
 						<Button
-							onPress={() => navigation.navigate(item.nav)}
+							onPress={item.func}
 							variant='link'
 							key={okey}
 						>

@@ -36,6 +36,9 @@ import { VStack } from '@gluestack-ui/themed';
 import ResultScreen from './src/screens/ResultScreen';
 import CusText from './src/components/CusText';
 import UnitSuitable from './src/screens/UnitSuitable';
+import CalculatorScreen from './src/screens/CalculatorScreen';
+import EULA from './src/screens/EULA';
+import PrivacyPolicy from './src/screens/PrivacyPolicy';
 const Stack = createNativeStackNavigator();
 function Home({ navigation }) {
 	const [expanded, setExpanded] = useState(false);
@@ -48,6 +51,8 @@ function Home({ navigation }) {
 		amenities,
 		bookings,
 		reports,
+		soa,
+		transactions,
 	} = useData();
 
 	const _renderIcon = (routeName, selectedTab) => {
@@ -133,7 +138,16 @@ function Home({ navigation }) {
 		>
 			<CurvedBottomBarExpo.Screen
 				name='Homepage'
-				component={() => <HomeScreen setExpanded={setExpanded} />}
+				component={() => (
+					<HomeScreen
+						setExpanded={setExpanded}
+						anncmnts={anncmnts}
+						mrequest={mrequest}
+						visitors={visitors}
+						bookings={bookings}
+						curUser={curUser}
+					/>
+				)}
 				position='LEFT'
 			/>
 			<CurvedBottomBarExpo.Screen
@@ -227,6 +241,8 @@ function Home({ navigation }) {
 					<PaymentScreen
 						setExpanded={setExpanded}
 						curUser={curUser}
+						soa={soa}
+						transactions={transactions}
 					/>
 				)}
 				position='RIGHT'
@@ -237,6 +253,8 @@ function Home({ navigation }) {
 					<TransactionScreen
 						setExpanded={setExpanded}
 						curUser={curUser}
+						soa={soa}
+						transactions={transactions}
 					/>
 				)}
 			/>
@@ -250,6 +268,14 @@ function Home({ navigation }) {
 					/>
 				)}
 				position='RIGHT'
+			/>
+			<CurvedBottomBarExpo.Screen
+				name='EndUser'
+				component={() => <EULA />}
+			/>
+			<CurvedBottomBarExpo.Screen
+				name='Privacy'
+				component={() => <PrivacyPolicy />}
 			/>
 		</CurvedBottomBarExpo.Navigator>
 	);
@@ -268,6 +294,7 @@ function AgentHome({ route, navigation }) {
 		amenities,
 		towers,
 		unitTypes,
+		payterm,
 	} = useData();
 
 	const _renderIcon = (routeName, selectedTab) => {
@@ -402,6 +429,7 @@ function AgentHome({ route, navigation }) {
 					/>
 				)}
 			/>
+
 			<CurvedBottomBarExpo.Screen
 				name='Interactive'
 				component={() => (
@@ -469,6 +497,14 @@ function AgentHome({ route, navigation }) {
 				position='RIGHT'
 			/>
 			<CurvedBottomBarExpo.Screen
+				name='EndUser'
+				component={() => <EULA />}
+			/>
+			<CurvedBottomBarExpo.Screen
+				name='Privacy'
+				component={() => <PrivacyPolicy />}
+			/>
+			<CurvedBottomBarExpo.Screen
 				name='Profile'
 				component={() => (
 					<AgentProfileScreen
@@ -479,6 +515,18 @@ function AgentHome({ route, navigation }) {
 					/>
 				)}
 				position='RIGHT'
+			/>
+
+			<CurvedBottomBarExpo.Screen
+				name='Calculator'
+				component={() => (
+					<CalculatorScreen
+						setExpanded={setExpanded}
+						curUser={curUser}
+						navigation={navigation}
+						payterm={payterm}
+					/>
+				)}
 			/>
 		</CurvedBottomBarExpo.Navigator>
 	);

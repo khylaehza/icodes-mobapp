@@ -70,6 +70,7 @@ const CusMediaPicker = ({
 	vid,
 	text = 'Pick an image or video of the problem.',
 	required,
+	multiple = true,
 }) => {
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -77,7 +78,7 @@ const CusMediaPicker = ({
 			allowsEditing: false,
 			aspect: [4, 3],
 			quality: 1,
-			allowsMultipleSelection: true,
+			allowsMultipleSelection: multiple,
 		});
 
 		if (!result.canceled) {

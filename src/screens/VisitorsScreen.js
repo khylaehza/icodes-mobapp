@@ -36,8 +36,10 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 	const ref = useRef(null);
 	const [showDet, setShowDet] = useState(false);
 	const [selectedDate, setSelectedDate] = useState();
+	const [selectedFinalDate, setSelectedFinalDate] = useState();
 	const [counter, setCounter] = useState(0);
 
+	const [cur, setCur] = useState({});
 	const resetFields = () => {
 		reset();
 		setSelectedDate();
@@ -81,6 +83,7 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 					For: `${curUser.FName} ${curUser.LName}`,
 					Visitor: visitors,
 					DateStart: moment(selectedDate).format('MM/DD/YYYY'),
+					DateEnd: moment(selectedFinalDate).format('MM/DD/YYYY'),
 					Purpose: data.purpose,
 					Status: 'Pending',
 					CreatedDate: serverTimestamp(),
@@ -114,8 +117,21 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 							/>
 						}
 						mode={'date'}
+						placeholder={'Select start date'}
 					/>
-
+					<CusDatePicker
+						selectedDate={selectedFinalDate}
+						setSelectedDate={setSelectedFinalDate}
+						icon={
+							<AntDesign
+								name='calendar'
+								size={22}
+								color='#0A2542'
+							/>
+						}
+						mode={'date'}
+						placeholder={'Select end date'}
+					/>
 					<HStack
 						justifyContent='space-between'
 						alignItems='center'
@@ -229,109 +245,132 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 		);
 	};
 
-	const ModalView = ({ data }) => {
-		return (
-			<>
-				<VStack gap={20}>
-					<HStack
-						justifyContent='space-between'
-						alignItems='center'
-					>
-						<AntDesign
-							name='calendar'
-							size={22}
-							color='#0A2542'
-						/>
-						<Box
-							w={245}
-							borderBottomWidth={1}
-							borderBottomColor='$gray100'
-							pb={5}
-						>
-							<CusText
-								text={data.Date}
-								type={'PRIMARY'}
-								style={{ color: '#8e8e8e' }}
-							/>
-						</Box>
-					</HStack>
-
-					{data.VisitorName.map((name, key) => (
-						<HStack
-							justifyContent='space-between'
-							alignItems='center'
-							key={key}
-						>
-							<Ionicons
-								name='ios-people'
-								size={23}
-							/>
-
-							<Box
-								w={245}
-								borderBottomWidth={0.8}
-								borderBottomColor='$gray100'
-								pb={5}
+	const ModalView = () => {
+		if (cur.Visitor) {
+			return (
+				<CusModalView
+					header={`Visitors #${cur.VisitorID}`}
+					body={
+						<VStack gap={20}>
+							<HStack
+								justifyContent='space-between'
+								alignItems='center'
 							>
-								<CusText
-									text={name}
-									type={'PRIMARY'}
-									style={{ color: '#8e8e8e' }}
+								<AntDesign
+									name='calendar'
+									size={22}
+									color='#0A2542'
 								/>
-							</Box>
-						</HStack>
-					))}
+								<Box
+									w={245}
+									borderBottomWidth={1}
+									borderBottomColor='$gray100'
+									pb={5}
+								>
+									<CusText
+										text={
+											`${moment(cur.DateStart).format(
+												'MM/DD/YYYY hh:mm '
+											)} - ${moment(cur.DateEnd).format(
+												'MM/DD/YYYY hh:mm '
+											)}` == 'Invalid date - Invalid date'
+												? `${cur.DateStart} 12:00 AM - ${cur.DateEnd} 12:00 AM`
+												: `${moment(
+														cur.DateStart
+												  ).format(
+														'MM/DD/YYYY hh:mm '
+												  )} - ${moment(
+														cur.DateEnd
+												  ).format(
+														'MM/DD/YYYY hh:mm '
+												  )}`
+										}
+										type={'PRIMARY'}
+										style={{ color: '#8e8e8e' }}
+									/>
+								</Box>
+							</HStack>
 
-					<HStack
-						justifyContent='space-between'
-						alignItems='center'
-					>
-						<MaterialIcons
-							name='location-pin'
-							size={20}
-							color='#0A2542'
-						/>
+							{cur.Visitor.map((name, key) => (
+								<HStack
+									justifyContent='space-between'
+									alignItems='center'
+									key={key}
+								>
+									<Ionicons
+										name='ios-people'
+										size={23}
+									/>
 
-						<Box
-							w={245}
-							borderBottomWidth={1}
-							borderBottomColor='$gray100'
-							pb={5}
-						>
-							<CusText
-								text={data.Unit}
-								type={'PRIMARY'}
-								style={{ color: '#8e8e8e' }}
-							/>
-						</Box>
-					</HStack>
+									<Box
+										w={245}
+										borderBottomWidth={0.8}
+										borderBottomColor='$gray100'
+										pb={5}
+									>
+										<CusText
+											text={name}
+											type={'PRIMARY'}
+											style={{ color: '#8e8e8e' }}
+										/>
+									</Box>
+								</HStack>
+							))}
 
-					<HStack
-						justifyContent='space-between'
-						alignItems='center'
-					>
-						<Ionicons
-							name='md-pricetag'
-							size={18}
-							color='#0A2542'
-						/>
+							<HStack
+								justifyContent='space-between'
+								alignItems='center'
+							>
+								<MaterialIcons
+									name='location-pin'
+									size={20}
+									color='#0A2542'
+								/>
 
-						<Box
-							w={245}
-							borderBottomWidth={1}
-							borderBottomColor='$gray100'
-							pb={5}
-						>
-							<CusText
-								text={data.Purpose}
-								type={'PRIMARY'}
-								style={{ color: '#8e8e8e' }}
-							/>
-						</Box>
-					</HStack>
-				</VStack>
-			</>
-		);
+								<Box
+									w={245}
+									borderBottomWidth={1}
+									borderBottomColor='$gray100'
+									pb={5}
+								>
+									<CusText
+										text={cur.Unit}
+										type={'PRIMARY'}
+										style={{ color: '#8e8e8e' }}
+									/>
+								</Box>
+							</HStack>
+
+							<HStack
+								justifyContent='space-between'
+								alignItems='center'
+							>
+								<Ionicons
+									name='md-pricetag'
+									size={18}
+									color='#0A2542'
+								/>
+
+								<Box
+									w={245}
+									borderBottomWidth={1}
+									borderBottomColor='$gray100'
+									pb={5}
+								>
+									<CusText
+										text={cur.Purpose}
+										type={'PRIMARY'}
+										style={{ color: '#8e8e8e' }}
+									/>
+								</Box>
+							</HStack>
+						</VStack>
+					}
+					showModal={showDet}
+					setShowModal={setShowDet}
+				/>
+			);
+		}
 	};
 	return (
 		<View
@@ -391,8 +430,7 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 							visitors.filter((element) => {
 								return (
 									element.Status == stat.name &&
-									curUser.FName + '  ' + curUser.LName ===
-										element.For.toString()
+									curUser.Units === element.Unit
 								);
 							}).length > 0;
 
@@ -428,10 +466,7 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 									.filter((element) => {
 										return (
 											element.Status == stat.name &&
-											curUser.FName +
-												'  ' +
-												curUser.LName ===
-												element.For.toString()
+											curUser.Units === element.Unit
 										);
 									})
 									.map((data, vkey) => (
@@ -449,33 +484,25 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 												style={{ textAlign: 'left' }}
 											/>
 
-											<CusModalView
-												header={`Visitors #${data.VisitorID}`}
-												body={<ModalView data={data} />}
-												showModal={showDet}
-												setShowModal={setShowDet}
-												button={
-													<Button
-														variant='link'
-														size='xs'
-														onPress={() => {
-															setShowDet(true);
-														}}
-													>
-														<CusText
-															type={'PRIMARY'}
-															text={'View Info >'}
-															style={{
-																textAlign:
-																	'left',
-
-																fontSize: 12,
-															}}
-															color='#0A2542'
-														/>
-													</Button>
-												}
-											/>
+											<Button
+												variant='link'
+												size='xs'
+												onPress={() => {
+													setShowDet(true);
+													setCur(data);
+												}}
+											>
+												<CusText
+													type={'PRIMARY'}
+													text={'View Info >'}
+													style={{
+														textAlign: 'left',
+														fontSize: 12,
+													}}
+													color='#0A2542'
+												/>
+											</Button>
+											<ModalView />
 										</HStack>
 									))}
 								{!hasMatch && (

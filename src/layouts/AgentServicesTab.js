@@ -2,7 +2,7 @@ import { View, StyleSheet, Pressable } from 'react-native';
 import { AnimatePresence, MotiView } from 'moti';
 
 import { FontAwesome5, AntDesign } from '@expo/vector-icons';
-import { Image, VStack } from '@gluestack-ui/themed';
+import { Image } from '@gluestack-ui/themed';
 import CusText from '../components/CusText';
 
 const AgentServicesTab = ({ navigate, expanded, setExpanded }) => {
@@ -166,6 +166,7 @@ const actions = [
 		border: '#7e879e',
 		img: require('../../assets/imgs/calculator.png'),
 		fColor: '#0A2542',
+		nav: 'Calculator',
 	},
 ];
 

@@ -92,13 +92,14 @@ const style = StyleSheet.create({
 		borderRadius: 20,
 		width: '100%',
 		flex: 1,
-		marginTop: -20,
-		marginBottom: -20,
+		// marginTop: -60,
+		// marginBottom: -20,
 		zIndex: 2,
 		paddingTop: 50,
 		paddingLeft: 25,
 		paddingRight: 25,
 		alignItems: 'center',
+		height: '50%',
 	},
 
 	introTxt: {

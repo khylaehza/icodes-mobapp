@@ -3,8 +3,6 @@ import {
 	Center,
 	Box,
 	HStack,
-	AvatarFallbackText,
-	Image,
 	VStack,
 	Divider,
 	Button,
@@ -13,20 +11,13 @@ import {
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CusText from '../components/CusText';
-import {
-	Octicons,
-	MaterialCommunityIcons,
-	MaterialIcons,
-	Ionicons,
-	Feather,
-	AntDesign,
-} from '@expo/vector-icons';
+import { Ionicons, Feather } from '@expo/vector-icons';
 const AgentProfileScreen = ({ curUser, navigation, Logout }) => {
 	const insets = useSafeAreaInsets();
 
 	const other = [
 		{
-			name: 'Terms & Conditions',
+			name: 'End User License Agreement',
 			icon: (
 				<Ionicons
 					name='information-circle-outline'
@@ -35,7 +26,20 @@ const AgentProfileScreen = ({ curUser, navigation, Logout }) => {
 				/>
 			),
 			func: () => {
-				navigation.navigate('');
+				navigation.navigate('EndUser');
+			},
+		},
+		{
+			name: 'Privacy Policy',
+			icon: (
+				<Ionicons
+					name='information-circle-outline'
+					size={22}
+					color='black'
+				/>
+			),
+			func: () => {
+				navigation.navigate('Privacy');
 			},
 		},
 		{

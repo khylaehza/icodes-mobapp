@@ -52,7 +52,9 @@ const OwnerInfo = ({ curUser }) => {
 				>
 					<Avatar size='2xl'>
 						<AvatarImage
-							source={{ uri: curUser.UnOwnerImg }}
+							source={{
+								uri: curUser.UnOwnerImg,
+							}}
 							resizeMode='contain'
 							size='500px'
 						/>

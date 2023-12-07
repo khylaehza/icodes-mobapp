@@ -9,19 +9,28 @@ import {
 	Center,
 } from '@gluestack-ui/themed';
 import CusText from '../components/CusText';
-import { useData } from '../../DataContext';
 
-const HomeScreen = () => {
+import moment from 'moment';
+const HomeScreen = ({ curUser, anncmnts, mrequest, visitors, bookings }) => {
 	const insets = useSafeAreaInsets();
-	const {
-		curUser,
-		anncmnts,
-		mrequest,
-		visitors,
-		amenities,
-		bookings,
-		reports,
-	} = useData();
+	const today = new Date();
+	var annc = anncmnts.filter((element) => {
+		if (curUser.Tower) {
+			return element.For.includes(curUser.Tower) && element.Status;
+		}
+	});
+
+	var mrq = mrequest.filter((element) => {
+		return curUser.Units === element.Unit && element.Status != 'Completed';
+	});
+
+	var book = bookings.filter((element) => {
+		return `${curUser.FName} ${curUser.LName}` === element.UnitOwner;
+	});
+
+	var vstr = visitors.filter((element) => {
+		return curUser.Units === element.Unit && element.Status != 'Completed';
+	});
 
 	return (
 		<View
@@ -61,7 +70,9 @@ const HomeScreen = () => {
 						>
 							<CusText
 								type={'SECONDARY'}
-								text={'As of oct 6, you have...'}
+								text={`As of ${moment(today).format(
+									'MMM DD'
+								)}, you have...`}
 								style={{ fontSize: 13 }}
 							/>
 						</HStack>
@@ -79,7 +90,7 @@ const HomeScreen = () => {
 								rounded={15}
 							>
 								<CusText
-									text={'0 '}
+									text={annc.length}
 									type={'HEADNO'}
 								/>
 								<CusText
@@ -94,7 +105,7 @@ const HomeScreen = () => {
 								rounded={15}
 							>
 								<CusText
-									text={'1'}
+									text={mrq.length}
 									type={'HEADNO'}
 								/>
 								<CusText
@@ -116,7 +127,7 @@ const HomeScreen = () => {
 								rounded={15}
 							>
 								<CusText
-									text={'3 '}
+									text={book.length}
 									type={'HEADNO'}
 								/>
 								<CusText
@@ -131,7 +142,7 @@ const HomeScreen = () => {
 								rounded={15}
 							>
 								<CusText
-									text={'5'}
+									text={vstr.length}
 									type={'HEADNO'}
 								/>
 								<CusText

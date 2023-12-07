@@ -3,10 +3,8 @@ import {
 	Box,
 	HStack,
 	Divider,
-	Image,
 	VStack,
 	Center,
-	Button,
 } from '@gluestack-ui/themed';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Header from '../layouts/Header';

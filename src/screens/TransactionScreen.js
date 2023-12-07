@@ -11,25 +11,58 @@ import {
 } from '@gluestack-ui/themed';
 import Header from '../layouts/Header';
 import CusText from '../components/CusText';
-import { Ionicons, AntDesign, MaterialIcons } from '@expo/vector-icons';
+import {
+	Ionicons,
+	AntDesign,
+	MaterialIcons,
+	FontAwesome5,
+} from '@expo/vector-icons';
 import CusModal from '../components/CusModal';
 import CusInput from '../components/CusInput';
 import CusDatePicker from '../components/CusDatePicker';
 import CusMediaPicker from '../components/CusMediaPicker';
 import CusSelect from '../components/CusSelect';
+import CusSelectTransaction from '../components/CusSelectTransaction';
 import { useForm } from 'react-hook-form';
 import { useState, useRef } from 'react';
 import Toast from 'react-native-root-toast';
 import { IdGenerator } from '../utilities/IdGenerator';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
+import {
+	getStorage,
+	ref,
+	uploadBytesResumable,
+	getDownloadURL,
+} from 'firebase/storage';
+import CusModalView from '../components/CusModalView';
+import moment from 'moment';
+const getBlobFroUri = async (uri) => {
+	const blob = await new Promise((resolve, reject) => {
+		const xhr = new XMLHttpRequest();
+		xhr.onload = function () {
+			resolve(xhr.response);
+		};
+		xhr.onerror = function (e) {
+			reject(new TypeError('Network request failed'));
+		};
+		xhr.responseType = 'blob';
+		xhr.open('GET', uri, true);
+		xhr.send(null);
+	});
 
-const TransactionScreen = ({ curUser }) => {
+	return blob;
+};
+
+const TransactionScreen = ({ curUser, soa, transactions }) => {
+	const storage = getStorage();
 	const [showModal, setShowModal] = useState(false);
 	const [showDet, setShowDet] = useState(false);
 	const [type, setType] = useState('');
 	const [selectedDate, setSelectedDate] = useState();
-	const ref = useRef(null);
+	// const ref = useRef(null);
+	const [cur, setCur] = useState({});
+
 	const id = IdGenerator();
 	const insets = useSafeAreaInsets();
 	const [images, setImages] = useState({
@@ -39,22 +72,44 @@ const TransactionScreen = ({ curUser }) => {
 		videos: [],
 	});
 
+	const filteredOwner = soa.filter((owner) => {
+		if (owner.Unit == curUser.Units) {
+			return owner;
+		}
+	});
+
+	const choice = filteredOwner[0] ? filteredOwner[0].SOA : '';
+
+	let monthChoices = [];
+	Object.values(choice).map((item, key) => {
+		if (item.status != 'Paid') {
+			monthChoices.push(item.month);
+		}
+	});
+
+	const [amountType, setAmountType] = useState();
+
 	const services = [
 		{
 			name: 'Cash',
 			icon: require('../../assets/imgs/money.png'),
 		},
 		{
-			name: 'Bank',
-			icon: require('../../assets/imgs/card.png'),
+			name: 'Cash Deposit',
+			icon: require('../../assets/imgs/deposit.png'),
+		},
+		{
+			name: 'Check',
+			icon: require('../../assets/imgs/paycheck.png'),
 		},
 	];
 
+	// console.log(soa);
 	const status = [
 		{ name: 'Pending', icon: require('../../assets/imgs/pending.png') },
 		{ name: 'Confirmed', icon: require('../../assets/imgs/done.png') },
 	];
-	const btnRef = useRef(null);
+
 	const {
 		control,
 		handleSubmit,
@@ -65,8 +120,22 @@ const TransactionScreen = ({ curUser }) => {
 		clearErrors,
 	} = useForm();
 
+	const filteredMonth = () => {
+		let filData = '';
+		if (choice) {
+			Object.values(choice).filter((data, key) => {
+				if (amountType == data.month && data.total) {
+					filData = { ...data, key };
+				}
+			});
+		}
+		return filData;
+	};
+
 	const img = images['images'];
 	const vid = videos['videos'];
+
+	const media = [...img];
 	const Body = () => {
 		return (
 			<VStack gap={10}>
@@ -84,20 +153,59 @@ const TransactionScreen = ({ curUser }) => {
 					readOnly={true}
 					required={true}
 				/>
-				<CusSelect
-					name={`Payment`}
+				<CusSelectTransaction
+					name={`month`}
 					icon={
-						<MaterialIcons
-							name='location-pin'
-							size={20}
+						<FontAwesome5
+							name='calendar-day'
+							size={19}
 							color='#0A2542'
 						/>
 					}
 					control={control}
-					item={[...curUser.units]}
-					rules={{ required: 'Location is required.' }}
-					placeholder={'Payment For'}
+					item={monthChoices}
+					rules={{ required: 'Payment Month is required.' }}
+					placeholder={'Payment Month'}
 					required={true}
+					setType={setAmountType}
+					type={amountType}
+				/>
+				<CusInput
+					placeholder={
+						filteredMonth().total
+							? filteredMonth().total.substring(1)
+							: 'Amount'
+					}
+					name={`amount`}
+					control={control}
+					autoCapitalize='words'
+					icon={
+						<FontAwesome5
+							name='money-bill-alt'
+							size={18}
+							color='#0A2542'
+						/>
+					}
+					required={false}
+					readOnly={true}
+				/>
+				<CusInput
+					placeholder={'Receipt No'}
+					name={`receiptNo`}
+					control={control}
+					rules={{
+						required: 'Receipt No is required.',
+					}}
+					autoCapitalize='words'
+					icon={
+						<FontAwesome5
+							name='receipt'
+							size={18}
+							color='#0A2542'
+						/>
+					}
+					required={true}
+					keyboardType={'number-pad'}
 				/>
 				<CusDatePicker
 					selectedDate={selectedDate}
@@ -110,8 +218,9 @@ const TransactionScreen = ({ curUser }) => {
 						/>
 					}
 					mode={'date'}
-					placeholder={'Select payment date'}
+					placeholder={'Select date paid'}
 				/>
+
 				<CusMediaPicker
 					icon={
 						<Ionicons
@@ -128,6 +237,7 @@ const TransactionScreen = ({ curUser }) => {
 					vid={vid}
 					required={true}
 					text={'Select Receipt Image'}
+					multiple={false}
 				/>
 			</VStack>
 		);
@@ -137,21 +247,79 @@ const TransactionScreen = ({ curUser }) => {
 		reset();
 		setShowModal(false);
 		clearErrors();
+		setImages({
+			images: [],
+		});
 
+		const folderPath = `admin/transactions/${curUser.UID}`;
+		const storageRef = (imageName, ext) =>
+			ref(storage, `${folderPath}/${id}/receipt.png`);
 		try {
+			const uploadTasks = [];
+
+			await Promise.all(
+				media.map(async (element, key) => {
+					const mediaBlob = await getBlobFroUri(element);
+
+					return uploadTasks.push(
+						uploadBytesResumable(storageRef(key, 'jpg'), mediaBlob)
+					);
+				})
+			);
+
+			const uploadSnapshots = await Promise.all(
+				uploadTasks.map(
+					(task) =>
+						new Promise((resolve, reject) => {
+							task.on(
+								'state_changed',
+								(snapshot) => {
+									const progress =
+										(snapshot.bytesTransferred /
+											snapshot.totalBytes) *
+										100;
+
+									switch (snapshot.state) {
+										case 'paused':
+											console.log('Upload is paused');
+											break;
+										case 'running':
+											console.log('Upload is running');
+											break;
+									}
+								},
+								(error) => reject(error),
+								() => resolve(task.snapshot)
+							);
+						})
+				)
+			);
+
+			const downloadURLs = await Promise.all(
+				uploadSnapshots.map((snapshot) => getDownloadURL(snapshot.ref))
+			);
+
 			await addDoc(
 				collection(
 					db,
 					'maintenance',
 					'accountingmanagement',
-					'tbl_transaction'
+					'tbl_transactions'
 				),
 				{
-					TransactID: id,
-					RequestedBy: curUser.uid,
-					For: `${curUser.fName} ${curUser.lName}`,
-					Proof: img,
 					CreatedDate: serverTimestamp(),
+					TransactionID: id,
+					Unit: curUser.Units,
+					UnitOwner: `${curUser.FullName}`,
+					ReceiptNo: data.receiptNo,
+					ForMonth: amountType,
+					DatePaid: moment(selectedDate).format('MM/DD/YYYY'),
+					AmountPaid: filteredMonth().total
+						? filteredMonth().total.substring(1)
+						: 0,
+					PayMode: type,
+					Receipt: downloadURLs.toString(),
+					Status: 'Pending',
 				}
 			);
 
@@ -166,24 +334,106 @@ const TransactionScreen = ({ curUser }) => {
 		}
 	};
 
-	const ModalView = ({ data }) => {
-		return (
-			<CusMediaPicker
-				icon={
-					<Ionicons
-						name='ios-image'
-						size={20}
-						color='#0A2542'
+	const ModalView = () => {
+		if (cur && cur.Receipt && cur.Receipt) {
+			return (
+				<>
+					<CusModalView
+						header={`Transaction #${cur.TransactionID}`}
+						body={
+							<VStack gap={20}>
+								<CusInput
+									placeholder={cur.PayMode}
+									name={`request`}
+									control={control}
+									icon={
+										<CusText
+											text={'Payment Type: '}
+											type={'SECONDARY'}
+										/>
+									}
+									readOnly={true}
+								/>
+
+								<CusInput
+									placeholder={cur.ForMonth}
+									name={`request`}
+									control={control}
+									icon={
+										<CusText
+											text={'Payment For: '}
+											type={'SECONDARY'}
+										/>
+									}
+									readOnly={true}
+								/>
+
+								<CusInput
+									placeholder={cur.AmountPaid}
+									name={`request`}
+									control={control}
+									icon={
+										<CusText
+											text={'Amount Paid: '}
+											type={'SECONDARY'}
+										/>
+									}
+									readOnly={true}
+								/>
+
+								<CusInput
+									placeholder={cur.ReceiptNo.toString()}
+									name={`request`}
+									control={control}
+									icon={
+										<CusText
+											text={'Receipt No.: '}
+											type={'SECONDARY'}
+										/>
+									}
+									readOnly={true}
+								/>
+
+								<CusInput
+									placeholder={cur.DatePaid}
+									name={`request`}
+									control={control}
+									icon={
+										<CusText
+											text={'Date Paid: '}
+											type={'SECONDARY'}
+										/>
+									}
+									readOnly={true}
+								/>
+								<CusMediaPicker
+									icon={
+										<Ionicons
+											name='ios-image'
+											size={20}
+											color='#0A2542'
+										/>
+									}
+									control={control}
+									name={'media'}
+									setVideos={setVideos}
+									setImages={setImages}
+									img={
+										!cur.Receipt.includes('mp4') && [
+											cur.Receipt,
+										]
+									}
+									vid={cur.Receipt.includes('mp4')}
+									text={''}
+								/>
+							</VStack>
+						}
+						showModal={showDet}
+						setShowModal={setShowDet}
 					/>
-				}
-				control={control}
-				name={'proof'}
-				setVideos={setVideos}
-				setImages={setImages}
-				img={data.RequestImg.filter((word) => !word.includes('mp4'))}
-				text={'Proof of Payment'}
-			/>
-		);
+				</>
+			);
+		}
 	};
 
 	return (
@@ -241,7 +491,7 @@ const TransactionScreen = ({ curUser }) => {
 										setShowModal(true);
 										setType(serv.name);
 									}}
-									ref={btnRef}
+									// ref={btnRef}
 								>
 									<VStack
 										alignItems='center'
@@ -268,62 +518,70 @@ const TransactionScreen = ({ curUser }) => {
 			</Center>
 
 			<ScrollView showsVerticalScrollIndicator={false}>
-				<Box
-					padding={20}
-					rounded={15}
-					bgColor='#FFF'
-					gap={2}
-					hardShadow={4}
-					shadowColor='$blue200'
-					mb={20}
-				>
-					<HStack
-						gap={8}
-						alignItems='center'
-					>
-						<Image
-							source={require('../../assets/imgs/done.png')}
-							h={16}
-							w={16}
-							objectFit='contain'
-						/>
-						<CusText
-							type={'TERTIARY'}
-							text={'History'}
-						/>
-					</HStack>
-					<Divider my='$1.5' />
+				{status.map((stat, key) => {
+					var hasMatch =
+						transactions.filter((element) => {
+							return (
+								element.Status == stat.name &&
+								`${curUser.FullName}` === element.UnitOwner
+							);
+						}).length > 0;
 
-					{/* {reports
-						.filter((element) => {
-							return curUser.uid === element.RequestedBy;
-						})
-						.map((data, vkey) => (
+					return (
+						<Box
+							padding={20}
+							rounded={15}
+							bgColor='#FFF'
+							gap={2}
+							hardShadow={4}
+							shadowColor='$blue200'
+							key={key}
+							mb={20}
+						>
 							<HStack
-								pr={5}
-								pl={5}
-								justifyContent='space-between'
+								gap={8}
 								alignItems='center'
-								key={vkey}
-								mb={-3}
 							>
-								<CusText
-									type={'SECONDARY'}
-									text={`Report #${data.ReportID}`}
-									style={{ textAlign: 'left' }}
+								<Image
+									source={stat.icon}
+									h={16}
+									w={16}
+									objectFit='contain'
 								/>
-
-								<CusModalView
-									header={`Report #${data.ReportID}`}
-									body={<ModalView data={data} />}
-									showModal={showDet}
-									setShowModal={setShowDet}
-									button={
+								<CusText
+									type={'TERTIARY'}
+									text={stat.name}
+								/>
+							</HStack>
+							<Divider my='$1.5' />
+							{transactions
+								.filter((element) => {
+									return (
+										element.Status == stat.name &&
+										`${curUser.FullName}` ===
+											element.UnitOwner
+									);
+								})
+								.map((data, akey) => (
+									<HStack
+										pr={5}
+										pl={5}
+										justifyContent='space-between'
+										alignItems='center'
+										key={akey}
+										mb={-3}
+									>
+										<CusText
+											type={'SECONDARY'}
+											text={`Transaction #${data.TransactionID}`}
+											style={{ textAlign: 'left' }}
+										/>
 										<Button
 											variant='link'
 											size='xs'
 											onPress={() => {
 												setShowDet(true);
+												setCur(data);
 											}}
 										>
 											<CusText
@@ -337,11 +595,30 @@ const TransactionScreen = ({ curUser }) => {
 												color='#0A2542'
 											/>
 										</Button>
-									}
+										<ModalView />
+									</HStack>
+								))}
+							{!hasMatch && (
+								<CusText
+									type={'SECONDARY'}
+									text={`No data available.`}
+									style={{
+										textAlign: 'center',
+									}}
 								/>
-							</HStack>
-						))} */}
-				</Box>
+							)}
+						</Box>
+					);
+				})}
+				{/* <Box
+					padding={20}
+					rounded={15}
+					bgColor='#FFF'
+					gap={2}
+					hardShadow={4}
+					shadowColor='$blue200'
+					mb={20}
+				></Box> */}
 			</ScrollView>
 		</View>
 	);

@@ -12,10 +12,10 @@ import {
 import React from 'react';
 import CusText from './CusText';
 import { AntDesign } from '@expo/vector-icons';
-const CusModalView = ({ header, body, setShowModal, showModal, button }) => {
+const CusModalView = ({ header, body, setShowModal, showModal, button, h }) => {
 	return (
 		<>
-			{button}
+			{/* {button} */}
 
 			<Modal
 				isOpen={showModal}
@@ -24,7 +24,7 @@ const CusModalView = ({ header, body, setShowModal, showModal, button }) => {
 				}}
 			>
 				<ModalBackdrop />
-				<ModalContent>
+				<ModalContent h={h}>
 					<ModalHeader>
 						<CusText
 							type={'TERTIARY'}
