@@ -113,7 +113,8 @@ const CusMediaPicker = ({
 							<Button
 								onPress={pickImage}
 								variant='link'
-								w={230}
+								// w={230}
+								w={'90%'}
 							>
 								<CusText
 									type={'PRIMARY'}

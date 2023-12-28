@@ -81,7 +81,6 @@ function ActionButton({ action, index, navigate, setExpanded, expanded }) {
 			<Pressable
 				onPress={() => {
 					setExpanded(false);
-					// expanded ? navigate(action.location) : console.log('ame');
 					navigate(action.nav);
 				}}
 				style={[
@@ -90,6 +89,8 @@ function ActionButton({ action, index, navigate, setExpanded, expanded }) {
 						backgroundColor: action.color,
 						shadowColor: action.color,
 						borderColor: action.border,
+						// marginLeft: -38,
+						// marginTop: -85,
 						marginLeft: -7,
 					},
 				]}

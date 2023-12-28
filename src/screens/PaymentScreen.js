@@ -119,7 +119,6 @@ const PaymentScreen = ({ curUser, soa, transactions }) => {
 	table.map((p) => {
 		if (p.status) {
 			currentBalance += Number(p.amountPaid.replace(/,/g, ''));
-			console.log(p);
 		} else if (p.status != '' && !p.status) {
 			let nextMonth = moment().add(1, 'months');
 			let prevMonth = moment().subtract(1, 'months');
@@ -396,7 +395,7 @@ const PaymentScreen = ({ curUser, soa, transactions }) => {
 								>
 									<CusText
 										type={'SECONDARY'}
-										text={moment(latePayments.month)
+										text={latePayments.month
 											.format('MMM')
 											.toString()
 											.toUpperCase()}
@@ -477,22 +476,19 @@ const PaymentScreen = ({ curUser, soa, transactions }) => {
 								>
 									<CusText
 										type={'SECONDARY'}
-										text={moment(upcomingPayment.month)
-											.format('MMM')
-											.toString()
-											.toUpperCase()}
+										text={upcomingPayment.month}
 										style={{
 											fontSize: 13,
 											color: '#8695A6',
 										}}
 									/>
-									<CusText
+									{/* <CusText
 										type={'SECONDARY'}
 										text={moment(
 											upcomingPayment.month
 										).format('DD')}
 										style={{ fontSize: 20 }}
-									/>
+									/> */}
 								</VStack>
 								<Divider
 									orientation={'vertical'}

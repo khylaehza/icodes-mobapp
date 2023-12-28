@@ -53,6 +53,7 @@ function Home({ navigation }) {
 		reports,
 		soa,
 		transactions,
+		Logout,
 	} = useData();
 
 	const _renderIcon = (routeName, selectedTab) => {
@@ -265,6 +266,7 @@ function Home({ navigation }) {
 						setExpanded={setExpanded}
 						navigation={navigation}
 						curUser={curUser}
+						Logout={Logout}
 					/>
 				)}
 				position='RIGHT'
@@ -295,6 +297,7 @@ function AgentHome({ route, navigation }) {
 		towers,
 		unitTypes,
 		payterm,
+		archivedBuyers,
 	} = useData();
 
 	const _renderIcon = (routeName, selectedTab) => {
@@ -492,6 +495,7 @@ function AgentHome({ route, navigation }) {
 						setExpanded={setExpanded}
 						curUser={curUser}
 						pBuyers={pBuyers}
+						archivedBuyers={archivedBuyers}
 					/>
 				)}
 				position='RIGHT'

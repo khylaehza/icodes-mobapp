@@ -29,8 +29,8 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 	const insets = useSafeAreaInsets();
 	const status = [
 		{ name: 'Pending', icon: require('../../assets/imgs/wip.png') },
-		{ name: 'Confirmed', icon: require('../../assets/imgs/pending.png') },
-		{ name: 'Completed', icon: require('../../assets/imgs/done.png') },
+		{ name: 'In', icon: require('../../assets/imgs/pending.png') },
+		{ name: 'Out', icon: require('../../assets/imgs/done.png') },
 	];
 	const [showModal, setShowModal] = useState(false);
 	const ref = useRef(null);
@@ -143,7 +143,8 @@ const VisitorsScreen = ({ curUser, visitors }) => {
 						/>
 						<Button
 							onPress={addPerson}
-							w={245}
+							// w={245}
+							w={'90%'}
 							variant='outline'
 							borderColor='#a9a9ac'
 						>

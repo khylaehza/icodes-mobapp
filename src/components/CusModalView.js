@@ -24,7 +24,7 @@ const CusModalView = ({ header, body, setShowModal, showModal, button, h }) => {
 				}}
 			>
 				<ModalBackdrop />
-				<ModalContent h={h}>
+				<ModalContent maxHeight={h}>
 					<ModalHeader>
 						<CusText
 							type={'TERTIARY'}

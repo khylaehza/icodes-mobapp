@@ -24,7 +24,8 @@ const CusSelectTransaction = ({ icon, placeholder, item, type, setType }) => {
 			<Select
 				onValueChange={(val) => setType(val)}
 				selectedValue={type}
-				w={250}
+				// w={250}
+				w={'90%'}
 				ml={10}
 			>
 				<SelectTrigger variant='underlined'>

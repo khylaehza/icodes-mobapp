@@ -2,7 +2,6 @@ import { Input, InputField } from '@gluestack-ui/themed';
 const CusInputClear = ({
 	placeholder,
 	h = 35,
-
 	isReadOnly,
 	w,
 	setInput,
@@ -27,15 +26,10 @@ const CusInputClear = ({
 					textAlign: 'right',
 				}}
 				onChangeText={(val) => {
-					let parts = val.split('.');
-					let v = parts[0].replace(/\D/g, '');
-					let dec = parts[1];
-					Number(dec !== undefined ? v + '.' + dec : v);
-					let n = new Intl.NumberFormat('en-US').format(v);
-					n = dec !== undefined ? n + '.' + dec : n;
-					setInput(n);
+					let num = val.replace(/\D/g, '');
+					setInput(num);
 				}}
-				value={input}
+				value={new Intl.NumberFormat('en-US').format(input)}
 				type='number'
 				keyboardType={'number-pad'}
 			/>

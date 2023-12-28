@@ -28,7 +28,8 @@ const CusTextArea = ({
 	stack = false,
 	disabled = false,
 	required,
-	w = 238,
+	//w = 238,
+	w = '90%',
 }) => {
 	return (
 		<Controller

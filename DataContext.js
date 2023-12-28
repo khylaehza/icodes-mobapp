@@ -479,6 +479,28 @@ const DataProvider = ({ children }) => {
 		});
 		return () => unsubscribe();
 	}, []);
+
+	const [archivedBuyers, setArchivedBuyers] = useState([{}]);
+	useEffect(() => {
+		const q = query(
+			collection(db, 'maintenance', 'salesmanagement', 'tbl_archivedPros')
+		);
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			const archived = [];
+			querySnapshot.forEach(
+				(doc) => {
+					archived.push({ ...doc.data(), id: doc.id });
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+
+			setArchivedBuyers(archived);
+		});
+		return () => unsubscribe();
+	}, []);
+
 	const value = {
 		Login,
 		AgentLogin,
@@ -503,6 +525,7 @@ const DataProvider = ({ children }) => {
 		payterm,
 		soa,
 		transactions,
+		archivedBuyers,
 	};
 
 	return (

@@ -23,7 +23,7 @@ import {
 	AntDesign,
 } from '@expo/vector-icons';
 
-const ProfileScreen = ({ navigation, curUser }) => {
+const ProfileScreen = ({ navigation, curUser, Logout }) => {
 	const insets = useSafeAreaInsets();
 
 	const other = [

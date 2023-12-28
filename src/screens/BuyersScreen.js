@@ -34,7 +34,7 @@ import CusCheckbox from '../components/CusCheckbox';
 import CusRadioGroup from '../components/CusRadioGroup';
 import CusDatePicker from '../components/CusDatePicker';
 import moment from 'moment';
-const BuyersScreen = ({ curUser, pBuyers }) => {
+const BuyersScreen = ({ curUser, pBuyers, archivedBuyers }) => {
 	const insets = useSafeAreaInsets();
 
 	const id = IdGenerator();
@@ -43,7 +43,9 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 	const [showDet, setShowDet] = useState(false);
 	const [selectedDate, setSelectedDate] = useState();
 	const btnRef = useRef(null);
+	const [cur, setCur] = useState({});
 
+	const [showArchive, setShowArchive] = useState(false);
 	const gender = ['Male', 'Female'];
 	const citizenship = ['Filipino', 'American', 'Others: '];
 	const civilStat = [
@@ -261,7 +263,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 							keyboardType={'number-pad'}
 							placeholder={'09xx-xxx-xxx'}
 							maxLength={11}
-							w={175}
+							// w={'100%'}
 							required={true}
 							type={'number'}
 							rules={{ required: 'Contact number is required.' }}
@@ -292,7 +294,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 							}
 							type={'email'}
 							placeholder={'name@example.com'}
-							w={175}
+							// w={175}
 							required={true}
 							rules={{ required: 'Email is required.' }}
 						/>
@@ -435,59 +437,170 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 		}
 	};
 
-	const ModalView = ({ data }) => {
+	const ArchiveModal = () => {
+		var hasMatch =
+			archivedBuyers.filter((element) => {
+				return curUser.EmpId === element.AgentID;
+			}).length > 0;
 		return (
-			<>
-				<CusInput
-					placeholder={data.PBType}
-					name={`request`}
-					control={control}
-					icon={
-						<Ionicons
-							name='md-pricetag'
-							size={18}
-							color='#0A2542'
+			<CusModalView
+				header={`Archived Buyers`}
+				body={
+					<VStack>
+						<ScrollView showsVerticalScrollIndicator={false}>
+							{pBuyers
+								.filter((element) => {
+									return curUser.EmpId === element.AgentID;
+								})
+								.map((data, bkey) => (
+									<VStack gap={10}>
+										<Box
+											key={bkey}
+											bgColor='$white300'
+											rounded={15}
+											hardShadow={4}
+											shadowColor='$blue200'
+											alignItems='left'
+											justifyContent='space-between'
+											p={30}
+											w={'100%'}
+											borderWidth={1}
+											borderColor='$blue200'
+										>
+											<CusInput
+												placeholder={data.PBType}
+												name={`request`}
+												control={control}
+												icon={
+													<Ionicons
+														name='md-pricetag'
+														size={18}
+														color='#0A2542'
+													/>
+												}
+												readOnly={true}
+											/>
+											<CusInput
+												placeholder={
+													data.FName +
+													' ' +
+													data.LName
+												}
+												name={`lName`}
+												control={control}
+												icon={
+													<CusText
+														text={'Name:'}
+														type={'SECONDARY'}
+													/>
+												}
+												readOnly={true}
+											/>
+
+											<CusInput
+												name={`Contact`}
+												control={control}
+												icon={
+													<CusText
+														text={'Contact No.'}
+														type={'SECONDARY'}
+													/>
+												}
+												readOnly={true}
+												placeholder={data.CNum}
+											/>
+
+											<CusInput
+												name={`Email`}
+												control={control}
+												icon={
+													<CusText
+														text={'Email: '}
+														type={'SECONDARY'}
+													/>
+												}
+												readOnly={true}
+												placeholder={data.Email}
+											/>
+										</Box>
+									</VStack>
+								))}
+						</ScrollView>
+
+						{!hasMatch && (
+							<CusText
+								type={'SECONDARY'}
+								text={`No data available.`}
+								style={{
+									textAlign: 'center',
+								}}
+							/>
+						)}
+					</VStack>
+				}
+				showModal={showArchive}
+				setShowModal={setShowArchive}
+				h={650}
+			/>
+		);
+	};
+
+	const ModalView = () => {
+		return (
+			<CusModalView
+				header={` #${cur.BuyersID}`}
+				body={
+					<VStack gap={10}>
+						<CusInput
+							placeholder={cur.PBType}
+							name={`request`}
+							control={control}
+							icon={
+								<Ionicons
+									name='md-pricetag'
+									size={18}
+									color='#0A2542'
+								/>
+							}
+							readOnly={true}
 						/>
-					}
-					readOnly={true}
-				/>
-				<CusInput
-					placeholder={data.LName}
-					name={`lName`}
-					control={control}
-					icon={
-						<CusText
-							text={'Last Name:'}
-							type={'SECONDARY'}
+						<CusInput
+							placeholder={cur.LName}
+							name={`lName`}
+							control={control}
+							icon={
+								<CusText
+									text={'Last Name:'}
+									type={'SECONDARY'}
+								/>
+							}
+							readOnly={true}
 						/>
-					}
-					readOnly={true}
-				/>
-				<CusInput
-					name={`fName`}
-					control={control}
-					icon={
-						<CusText
-							text={'First Name:'}
-							type={'SECONDARY'}
+						<CusInput
+							name={`fName`}
+							control={control}
+							icon={
+								<CusText
+									text={'First Name:'}
+									type={'SECONDARY'}
+								/>
+							}
+							readOnly={true}
+							placeholder={cur.FName}
 						/>
-					}
-					readOnly={true}
-					placeholder={data.FName}
-				/>
-				<CusInput
-					name={`mName`}
-					control={control}
-					icon={
-						<CusText
-							text={'Middle Name:'}
-							type={'SECONDARY'}
+						<CusInput
+							name={`mName`}
+							control={control}
+							icon={
+								<CusText
+									text={'Middle Name:'}
+									type={'SECONDARY'}
+								/>
+							}
+							readOnly={true}
+							placeholder={cur.MName}
 						/>
-					}
-					readOnly={true}
-					placeholder={data.MName}
-				/>
-				{/* <CusInput
+						{/* <CusInput
 					name={`gender`}
 					control={control}
 					icon={
@@ -497,7 +610,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 						/>
 					}
 					readOnly={true}
-					placeholder={data.Gender}
+					placeholder={cur.Gender}
 				/>
 				<CusInput
 					name={`bday`}
@@ -509,7 +622,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 						/>
 					}
 					readOnly={true}
-					placeholder={data.BDate}
+					placeholder={cur.BDate}
 				/>
 				<CusInput
 					name={`citi`}
@@ -521,7 +634,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 						/>
 					}
 					readOnly={true}
-					placeholder={data.Citizen}
+					placeholder={cur.Citizen}
 				/>
 				<CusInput
 					name={`civil`}
@@ -533,10 +646,10 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 						/>
 					}
 					readOnly={true}
-					placeholder={data.Civil}
+					placeholder={cur.Civil}
 				/> */}
-				{/* <CusTextArea
-					placeholder={data.Address}
+						{/* <CusTextArea
+					placeholder={cur.Address}
 					control={control}
 					icon={
 						<CusText
@@ -557,21 +670,21 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 						/>
 					}
 					readOnly={true}
-					placeholder={data.Postal}
+					placeholder={cur.Postal}
 				/> */}
-				<CusInput
-					name={`Contact`}
-					control={control}
-					icon={
-						<CusText
-							text={'Contact No.'}
-							type={'SECONDARY'}
+						<CusInput
+							name={`Contact`}
+							control={control}
+							icon={
+								<CusText
+									text={'Contact No.'}
+									type={'SECONDARY'}
+								/>
+							}
+							readOnly={true}
+							placeholder={cur.CNum}
 						/>
-					}
-					readOnly={true}
-					placeholder={data.CNum}
-				/>
-				{/* <CusInput
+						{/* <CusInput
 					name={`Tel`}
 					control={control}
 					icon={
@@ -581,21 +694,21 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 						/>
 					}
 					readOnly={true}
-					placeholder={data.Tel}
+					placeholder={cur.Tel}
 				/> */}
-				<CusInput
-					name={`Email`}
-					control={control}
-					icon={
-						<CusText
-							text={'Email: '}
-							type={'SECONDARY'}
+						<CusInput
+							name={`Email`}
+							control={control}
+							icon={
+								<CusText
+									text={'Email: '}
+									type={'SECONDARY'}
+								/>
+							}
+							readOnly={true}
+							placeholder={cur.Email}
 						/>
-					}
-					readOnly={true}
-					placeholder={data.Email}
-				/>
-				{/* <CusInput
+						{/* <CusInput
 					name={`Company`}
 					control={control}
 					icon={
@@ -605,7 +718,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 						/>
 					}
 					readOnly={true}
-					placeholder={data.CompName}
+					placeholder={cur.CompName}
 				/>
 				<CusInput
 					name={`CompAdd`}
@@ -617,9 +730,13 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 						/>
 					}
 					readOnly={true}
-					placeholder={data.CompAdd}
+					placeholder={cur.CompAdd}
 				/> */}
-			</>
+					</VStack>
+				}
+				showModal={showDet}
+				setShowModal={setShowDet}
+			/>
 		);
 	};
 	return (
@@ -635,7 +752,7 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 				m={20}
 				alignContent='flex-start'
 				justifyContent='flex-start'
-				h={340}
+				h={320}
 			>
 				<Header
 					img={require('../../assets/gifs/buyers.gif')}
@@ -703,6 +820,24 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 			</Center>
 
 			<ScrollView showsVerticalScrollIndicator={false}>
+				<HStack
+					justifyContent={'flex-end'}
+					alignItems={'center'}
+					w={'100%'}
+				>
+					<Button
+						variant={'link'}
+						size={'xs'}
+						onPress={() => setShowArchive(true)}
+					>
+						<CusText
+							type={'PRIMARY'}
+							text={'View Archived >'}
+							style={{ fontSize: 13 }}
+						/>
+					</Button>
+					<ArchiveModal />
+				</HStack>
 				<Box mb={50}>
 					{servHistory.map((stat, skey) => {
 						var hasMatch =
@@ -753,32 +888,25 @@ const BuyersScreen = ({ curUser, pBuyers }) => {
 													textAlign: 'left',
 												}}
 											/>
-											<CusModalView
-												header={`${stat.name} #${data.BuyersID}`}
-												body={<ModalView data={data} />}
-												showModal={showDet}
-												setShowModal={setShowDet}
-												button={
-													<Button
-														variant='link'
-														size='xs'
-														onPress={() => {
-															setShowDet(true);
-														}}
-													>
-														<CusText
-															type={'PRIMARY'}
-															text={'View Info >'}
-															style={{
-																textAlign:
-																	'left',
-																fontSize: 12,
-															}}
-															color='#0A2542'
-														/>
-													</Button>
-												}
-											/>
+											<Button
+												variant='link'
+												size='xs'
+												onPress={() => {
+													setCur(data);
+													setShowDet(true);
+												}}
+											>
+												<CusText
+													type={'PRIMARY'}
+													text={'View Info >'}
+													style={{
+														textAlign: 'left',
+														fontSize: 12,
+													}}
+													color='#0A2542'
+												/>
+											</Button>
+											<ModalView />
 										</HStack>
 									))}
 								{!hasMatch && (

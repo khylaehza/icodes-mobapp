@@ -19,6 +19,21 @@ const AnnouncementScreen = ({ setExpanded, anncmnts, curUser }) => {
 	const purpose = ['Events', 'Maintenance', 'News', 'Others'];
 	const [type, setType] = useState('Events');
 
+	const [strLength, setStrLength] = useState(15);
+	const [more, setMore] = useState(false);
+
+	function getSpecificNumberOfWords(text, numberOfWords) {
+		text = text.trim();
+
+		let words = text.split(/\s+/);
+
+		let selectedWords = words.slice(0, numberOfWords);
+
+		let result = selectedWords.join(' ');
+
+		return result;
+	}
+
 	var hasMatch =
 		anncmnts.filter((element) => {
 			return (
@@ -121,6 +136,7 @@ const AnnouncementScreen = ({ setExpanded, anncmnts, curUser }) => {
 							const date = data.DatePosted
 								? data.DatePosted.seconds * 1000
 								: '';
+
 							return (
 								<View
 									key={key}
@@ -194,13 +210,59 @@ const AnnouncementScreen = ({ setExpanded, anncmnts, curUser }) => {
 												/>
 											</HStack>
 
-											<CusText
-												type={'PRIMARY'}
-												style={{
-													textAlign: 'justify',
-												}}
-												text={data.Description}
-											/>
+											<VStack>
+												<CusText
+													type={'PRIMARY'}
+													style={{
+														textAlign: 'justify',
+													}}
+													text={
+														more
+															? `${getSpecificNumberOfWords(
+																	data.Description,
+																	data.Description.trim().split(
+																		/\s+/
+																	).length
+															  )} `
+															: `${getSpecificNumberOfWords(
+																	data.Description,
+																	15
+															  )} ...`
+													}
+												/>
+												<Button
+													variant={'link'}
+													justifyContent='flex-start'
+													onPress={() => {
+														setMore(!more);
+
+														// if (more) {
+														// 	setStrLength(
+														// 		data.Description.trim().split(
+														// 			/\s+/
+														// 		).length
+														// 	);
+														// } else {
+														// 	setStrLength(15);
+														// }
+													}}
+												>
+													<CusText
+														type={'PRIMARY'}
+														text={
+															more
+																? 'See Less.'
+																: 'See More.'
+														}
+														style={{
+															textAlign: 'left',
+															color: '#0A2542',
+															textDecorationLine:
+																'underline',
+														}}
+													/>
+												</Button>
+											</VStack>
 										</Box>
 									</Box>
 								</View>

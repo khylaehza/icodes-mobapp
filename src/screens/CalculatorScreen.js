@@ -89,7 +89,7 @@ const CalculatorScreen = ({ navigation, payterm }) => {
 						h={50}
 						size={30}
 						setInput={setTCP}
-						input={tcp ? tcp : ''}
+						input={tcp ? tcp.toLocaleString() : ''}
 					/>
 					<CusText
 						text={`Downpayment Percent (${percent}%)`}

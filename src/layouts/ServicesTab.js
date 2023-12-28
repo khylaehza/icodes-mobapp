@@ -91,6 +91,8 @@ function ActionButton({ action, index, navigate, setExpanded, expanded }) {
 						shadowColor: action.color,
 						borderColor: action.border,
 						marginLeft: -7,
+						// marginLeft: -38,
+						// marginTop: -85,
 					},
 				]}
 			>

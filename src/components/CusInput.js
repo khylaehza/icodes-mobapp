@@ -20,7 +20,7 @@ const CusInput = ({
 	autoCapitalize,
 	icon = '',
 	readOnly = false,
-	w = 250,
+	w = '90%',
 }) => {
 	return (
 		<Controller

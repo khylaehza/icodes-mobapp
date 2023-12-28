@@ -29,7 +29,7 @@ const CusSelect = ({
 	item,
 	variant = 'underlined',
 	textAlign = 'left',
-	w = 250,
+	w = '90%',
 	bgColor = '$white100',
 	disabled = false,
 	required,

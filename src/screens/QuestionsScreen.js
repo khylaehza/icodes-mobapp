@@ -154,7 +154,7 @@ const QuestionsScreen = ({ amenities, setDssRes, navigation }) => {
 										</>
 									)}
 
-								{currentCard >= 14 && (
+								{currentCard >= questionLength - 3 && (
 									<Button
 										onPress={handleNext}
 										variant={'solid'}

@@ -22,7 +22,8 @@ const CusDatePicker = ({
 	icon,
 	mode,
 	placeholder = 'Please select date',
-	w = 245,
+	//w = 245,
+	w = '90%',
 }) => {
 	const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 

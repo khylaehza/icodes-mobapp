@@ -30,11 +30,13 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 
 	const status = [
 		{ name: 'Pending', icon: require('../../assets/imgs/pending.png') },
+		{ name: 'Declined', icon: require('../../assets/imgs/failed.png') },
 		{
-			name: 'Confirmed',
+			name: 'Approved',
 			icon: require('../../assets/imgs/wip.png'),
 		},
-		{ name: 'Completed', icon: require('../../assets/imgs/done.png') },
+		{ name: 'Check-In', icon: require('../../assets/imgs/check-in.png') },
+		{ name: 'Check-Out', icon: require('../../assets/imgs/check-out.png') },
 	];
 
 	const [showModal, setShowModal] = useState(false);
@@ -216,6 +218,34 @@ const AmenitiesScreen = ({ curUser, amenities, bookings }) => {
 									/>
 								</Box>
 							</HStack>
+
+							{cur.Reason && (
+								<HStack
+									justifyContent='space-between'
+									alignItems='center'
+								>
+									<CusText
+										text={'Declined Reason: '}
+										type={'SECONDARY'}
+										style={{ color: '#0A2542' }}
+									/>
+
+									<Box
+										w={245}
+										borderBottomWidth={1}
+										borderBottomColor='$gray100'
+										pb={5}
+										alignContent='left'
+									>
+										<CusText
+											text={cur.Reason}
+											type={'PRIMARY'}
+											style={{ color: '#8e8e8e' }}
+											textAlign={'left'}
+										/>
+									</Box>
+								</HStack>
+							)}
 						</VStack>
 					}
 					showModal={showDet}
